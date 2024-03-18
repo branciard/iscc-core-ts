@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "ES2020",
+        "moduleResolution": "node",
+        "target": "es2022",
+        "allowJs": false,
+        "baseUrl": "./",
+        "declaration": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "incremental": true,
+        "outDir": "./lib/esm",
+        "resolveJsonModule": true,
+        "rootDir": "./src",
+        "sourceMap": true,
+        "inlineSources": true,
+        "strict": true,
+    },
+    "include": [ "src/**/*"],
+    "exclude": ["**/src/**/*.test.ts"]
+}

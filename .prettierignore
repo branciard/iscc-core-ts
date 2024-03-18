@@ -1,0 +1,6 @@
+.DS_Store
+dist
+lib
+.husky
+node_modules
+target
