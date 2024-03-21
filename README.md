@@ -1,5 +1,5 @@
 # iscc-core-ts
-Iscc core TypeScript implementation of iscc-core reference
+Iscc core TypeScript implementation of [iscc-core reference](https://github.com/iscc/iscc-core)
 
 
 
