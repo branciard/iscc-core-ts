@@ -93,10 +93,7 @@ export async function gen_meta_code_v0(
         if (meta.includes('data:')) {
             // Data-URL expected
             const durl = meta;
-            let payload = b64DecodeUnicode(durl.split(',')[1]);
-            if (isJson(payload)) {
-                payload = JSON.stringify(JSON.parse(payload)); //canonicalize
-            }
+            const payload = b64DecodeUnicode(durl.split(',')[1]);
             meta_code_digest = await soft_hash_meta_v0(
                 nameResult,
                 payload,
@@ -185,9 +182,7 @@ export async function soft_hash_meta_v0(
 
             extra_hash_digests = await Promise.all(
                 extra_n_grams.map(async (s) => {
-                    const blackbox = await blake3(text_encodeUTF8(s));
-                    //console.log(blackbox)
-                    return blackbox;
+                    return await blake3(text_encodeUTF8(s));
                 })
             );
         } else {
@@ -195,8 +190,7 @@ export async function soft_hash_meta_v0(
             const extra_n_grams = sliding_window(extra, META_NGRAM_SIZE_TEXT);
             extra_hash_digests = await Promise.all(
                 extra_n_grams.map(async (s) => {
-                    const blackbox = await blake3(text_encodeUTF8(s));
-                    return blackbox;
+                    return await blake3(text_encodeUTF8(s));
                 })
             );
         }

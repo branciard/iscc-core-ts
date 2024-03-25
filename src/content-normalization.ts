@@ -76,12 +76,9 @@ export function text_clean(text: string): string {
     let textFiltered = '';
     const chars = Array.from(textWithoutCC);
     let newline_count: number = 0;
-    // console.log("text"+text)
     for (const c of chars) {
         if (isCharNewLinesUnicode(c)) {
-            //console.log("new line!")
             if (newline_count < 2) {
-                // console.log("new line <2")
                 textFiltered = textFiltered.concat('\u{000A}');
                 newline_count += 1;
             }

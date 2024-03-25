@@ -280,14 +280,10 @@ test('test_0016_meta_data_url', async () => {
     expect(result.name).toBe('Hello');
     expect(result.description).toBe('');
     expect(result.version).toBe(0);
-    //BLAKE3 Hashing {"some":"object"} =>111d3302b0605ec558c390ee013ae89ec6eea68ad2317a8b2de3f4169afeb2ca
-    //BLAKE3 Hashing {"some": "object"}=>796fdfd4ba8db1a63a1ad1377fa735cad99a10ff08bc655a7095d6508e815a0f
     expect(result.metahash).toBe(
-        '1e20111d3302b0605ec558c390ee013ae89ec6eea68ad2317a8b2de3f4169afeb2ca'
+        '1e20796fdfd4ba8db1a63a1ad1377fa735cad99a10ff08bc655a7095d6508e815a0f'
     );
-    //expect(result.metahash).toBe("1e20796fdfd4ba8db1a63a1ad1377fa735cad99a10ff08bc655a7095d6508e815a0f");
-    expect(result.iscc).toBe('ISCC:AAAWKLHFXN63LHL2'); // for payload = {"some":"object"}
-    //expect(result.iscc).toBe("ISCC:AAAWKLHFXN43ICP2");// for payload = {"some": "object"}
+    expect(result.iscc).toBe('ISCC:AAAWKLHFXN43ICP2');
     expect(result.meta).toBe(
         'data:application/json;charset=utf-8;base64,eyJzb21lIjogIm9iamVjdCJ9'
     );
