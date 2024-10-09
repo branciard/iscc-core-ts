@@ -16,7 +16,7 @@ The component-based structure of the ISCC identifies content at multiple levels 
 
 # Work In progress
 
-This library is under develpement. It is not ready for production.
+This library is under development. It is not ready for production. The current development planning can be check [here](https://github.com/users/branciard/projects/1)
 
 | Functions  | Implementation  | test coverage
 | ---------- | --------------  | -------- |
