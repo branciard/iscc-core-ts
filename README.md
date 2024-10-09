@@ -63,14 +63,15 @@ We recomand to use [nvm](https://github.com/nvm-sh/nvm) to install and target no
 Nvm version used:
 ```sh
 nvm --version
-0.39.3
+npm i
 ```
 Install node 21 
 
 ```sh
-nvm install 21
-v21.7.1 is already installed.
-Now using node v21.7.1 (npm v10.5.0)
+nvm install --lts
+Installing latest LTS version.
+v20.18.0 is already installed.
+Now using node v20.18.0 (npm v10.8.2)
 ```
 
 # Install and build
