@@ -2,6 +2,12 @@ export const METACODE_BITS: number = 64;
 export const META_TRIM_NAME: number = 128;
 export const META_NGRAM_SIZE_TEXT: number = 3;
 export const META_NGRAM_SIZE_BYTES: number = 4;
+export const CODE_CONTENT_TEXT_BITS: number = 64;
+export const TEXT_NGRAM_SIZE = 13;
+
+
+
+
 
 /**
  * 
@@ -72,3 +78,9 @@ export interface IMetaCodeResult {
     meta?: string;
     version: number;
 }
+
+export interface ICodeContentTextResult {
+    iscc: string;
+    characters: number;
+}
+
