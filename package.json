@@ -8,6 +8,7 @@
   "scripts": {
     "build": "tsc -b && tsc -p tsconfig-cjs.json",
     "typecheck": "tsc --noEmit",
+    "devtest": "jest -c=jest.config.cjs --no-cache src/code-content-text.test.ts --silent=false",
     "test": "jest -c=jest.config.cjs --no-cache",
     "test-isolated": "jest -c=jest-isolated.config.cjs --no-cache",
     "test-esm": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js -c=jest-esm.config.mjs --no-cache",
@@ -47,6 +48,7 @@
   },
   "dependencies": {
     "hash-wasm": "^4.11.0",
+    "js-xxhash": "^4.0.0",
     "rfc4648": "^1.5.3",
     "xregexp": "^5.1.1"
   }
