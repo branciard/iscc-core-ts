@@ -1,4 +1,5 @@
 export const METACODE_BITS: number = 64;
+export const TEXT_BITS: number = 64;
 export const META_TRIM_NAME: number = 128;
 export const META_NGRAM_SIZE_TEXT: number = 3;
 export const META_NGRAM_SIZE_BYTES: number = 4;
@@ -47,8 +48,29 @@ export enum MainTypes {
       NONE = 0
     */
 
+    /*
+        """
+        ### ST_CC
+    
+        SubTypes for `MT.CONTENT`
+    
+        | Uint | Symbol   | Bits | Purpose                                                 |
+        |----- |:---------|------|---------------------------------------------------------|
+        | 0    | TEXT     | 0000 | Match on syntactic text similarity                      |
+        | 1    | IMAGE    | 0001 | Match on perceptual image similarity                    |
+        | 2    | AUDIO    | 0010 | Match on audio chroma similarity                        |
+        | 3    | VIDEO    | 0011 | Match on perceptual similarity                          |
+        | 4    | MIXED    | 0100 | Match on similarity of content codes                    |
+        """
+    */
+
 export enum SubTypes {
-    NONE = 0
+    NONE = 0,
+    TEXT = 0,
+    IMAGE = 1,
+    AUDIO = 2,
+    VIDEO = 3,
+    MIXED = 4
 }
 
 /*
@@ -65,6 +87,9 @@ export enum SubTypes {
         V0 = 0
     
     */
+
+
+
 
 export enum Version {
     V0 = 0
