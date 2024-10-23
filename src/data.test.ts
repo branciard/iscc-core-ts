@@ -1,7 +1,8 @@
 import XRegExp from 'xregexp';
 import { gen_meta_code } from './metacode';
+import { gen_text_code } from './code-content-text';
 
-test('test_0001_title_only', async () => {
+test('gen_meta_code_v0_test_0001_title_only', async () => {
     const result = await gen_meta_code('Die Unendliche Geschichte');
     expect(result.name).toBe('Die Unendliche Geschichte');
     expect(result.description).toBe('');
@@ -12,7 +13,7 @@ test('test_0001_title_only', async () => {
     expect(result.iscc).toBe('ISCC:AAAZXZ6OU74YAZIM');
 });
 
-test('test_0002_title_extra', async () => {
+test('gen_meta_code_v0_test_0002_title_extra', async () => {
     const result = await gen_meta_code(
         'Die Unendliche Geschichte',
         'Von Michael Ende'
@@ -26,7 +27,7 @@ test('test_0002_title_extra', async () => {
     expect(result.iscc).toBe('ISCC:AAAZXZ6OU4E45RB5');
 });
 
-test('test_0003_96_bits', async () => {
+test('gen_meta_code_v0_test_0003_96_bits', async () => {
     const result = await gen_meta_code(
         'Die Unendliche Geschichte',
         'Von Michael Ende',
@@ -42,7 +43,7 @@ test('test_0003_96_bits', async () => {
     expect(result.iscc).toBe('ISCC:AABJXZ6OU4E45RB57GAGKDA');
 });
 
-test('test_0004_128_bits', async () => {
+test('gen_meta_code_v0_test_0004_128_bits', async () => {
     const result = await gen_meta_code(
         'Die Unendliche Geschichte',
         'Von Michael Ende',
@@ -58,7 +59,7 @@ test('test_0004_128_bits', async () => {
     expect(result.iscc).toBe('ISCC:AABZXZ6OU4E45RB57GAGKDGHZXV74');
 });
 
-test('test_0005_160_bits', async () => {
+test('gen_meta_code_v0_test_0005_160_bits', async () => {
     const result = await gen_meta_code(
         'Die Unendliche Geschichte',
         'Von Michael Ende',
@@ -74,7 +75,7 @@ test('test_0005_160_bits', async () => {
     expect(result.iscc).toBe('ISCC:AACJXZ6OU4E45RB57GAGKDGHZXV752RFK42Q');
 });
 
-test('test_0006_192_bits', async () => {
+test('gen_meta_code_v0_test_0006_192_bits', async () => {
     const result = await gen_meta_code(
         'Die Unendliche Geschichte',
         'Von Michael Ende',
@@ -90,7 +91,7 @@ test('test_0006_192_bits', async () => {
     expect(result.iscc).toBe('ISCC:AACZXZ6OU4E45RB57GAGKDGHZXV752RFK424V76TRU');
 });
 
-test('test_0007_224_bits', async () => {
+test('gen_meta_code_v0_test_0007_224_bits', async () => {
     const result = await gen_meta_code(
         'Die Unendliche Geschichte',
         'Von Michael Ende',
@@ -108,7 +109,7 @@ test('test_0007_224_bits', async () => {
     );
 });
 
-test('test_0008_256_bits', async () => {
+test('gen_meta_code_v0_test_0008_256_bits', async () => {
     const result = await gen_meta_code(
         'Die Unendliche Geschichte',
         'Von Michael Ende',
@@ -126,7 +127,7 @@ test('test_0008_256_bits', async () => {
     );
 });
 
-test('test_0009_i18n', async () => {
+test('gen_meta_code_v0_test_0009_i18n', async () => {
     const result = await gen_meta_code(
         'Iñtërnâtiônàlizætiøn☃',
         'Iñtërnâtiônàlizætiøn☃ Iñtërnâtiônàlizætiøn☃',
@@ -146,7 +147,7 @@ test('test_0009_i18n', async () => {
     );
 });
 
-test('test_0010_normalizeation', async () => {
+test('gen_meta_code_v0_test_0010_normalizeation', async () => {
     const result = await gen_meta_code(
         'Die unéndlíche,  Geschichte',
         '',
@@ -162,7 +163,7 @@ test('test_0010_normalizeation', async () => {
     expect(result.iscc).toBe('ISCC:AAAZXZ6OU74YAZIM');
 });
 
-test('test_0011_trim', async () => {
+test('gen_meta_code_v0_test_0011_trim', async () => {
     const result = await gen_meta_code(
         'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed',
         '',
@@ -180,7 +181,7 @@ test('test_0011_trim', async () => {
     expect(result.iscc).toBe('ISCC:AAA76GFOHGPPBMPM');
 });
 
-test('test_0012_trim_i18n', async () => {
+test('gen_meta_code_v0_test_0012_trim_i18n', async () => {
     const result = await gen_meta_code(
         'Iñtërnâtiônàlizætiøn☃ Iñtërnâtiônàlizætiøn☃ Iñtërnâtiônàlizætiøn☃ Iñtërnâtiônàlizætiøn☃ Iñtërnâtiônàlizætiøn☃ Iñtërnâtiônàlizætiøn☃',
         '',
@@ -198,7 +199,7 @@ test('test_0012_trim_i18n', async () => {
     expect(result.iscc).toBe('ISCC:AAARPPSUKDYKOY4N');
 });
 
-test('test_POP_UNICODE_member of unicode C=> Cs category', async () => {
+test('gen_meta_code_v0_test_POP_UNICODE_member of unicode C=> Cs category', async () => {
     const cc = XRegExp('^\\p{Control}+$');
     const cf = XRegExp('^\\p{Format}+$');
     const cs = XRegExp('^\\p{Surrogate}+$');
@@ -214,7 +215,7 @@ test('test_POP_UNICODE_member of unicode C=> Cs category', async () => {
     expect(cn.test(POP_UNICODE)).toBe(false);
 });
 
-test('test_0013_norm_i18n_256', async () => {
+test('gen_meta_code_v0_test_0013_norm_i18n_256', async () => {
     const POP_UNICODE = '\u{1F4A9}'; // is a member of
     const result = await gen_meta_code(
         'Ç 가 Ω ℍ ① ︷ i⁹ ¼ ǆ ⫝̸ ȴ ȷ ɂ ć',
@@ -240,7 +241,7 @@ test('test_0013_norm_i18n_256', async () => {
     );
 });
 
-test('test_0014_meta_object_json', async () => {
+test('gen_meta_code_v0_test_0014_meta_object_json', async () => {
     const json = '{"some": "object"}';
     const result = await gen_meta_code('Hello', '', json, 64);
     expect(result.name).toBe('Hello');
@@ -255,7 +256,7 @@ test('test_0014_meta_object_json', async () => {
     );
 });
 
-test('test_0015_meta_object_json_ld', async () => {
+test('gen_meta_code_v0_test_0015_meta_object_json_ld', async () => {
     const json = '{"@context": "object"}';
     const result = await gen_meta_code('Hello', '', json, 64);
     expect(result.name).toBe('Hello');
@@ -270,7 +271,7 @@ test('test_0015_meta_object_json_ld', async () => {
     );
 });
 
-test('test_0016_meta_data_url', async () => {
+test('gen_meta_code_v0_test_0016_meta_data_url', async () => {
     const result = await gen_meta_code(
         'Hello',
         '',
@@ -288,3 +289,50 @@ test('test_0016_meta_data_url', async () => {
         'data:application/json;charset=utf-8;base64,eyJzb21lIjogIm9iamVjdCJ9'
     );
 });
+
+
+test('gen_text_code_v0_test_0000_empty_str', async () => {
+    const result = await gen_text_code(
+        '',
+        64
+    );
+    expect(result.iscc).toBe('ISCC:EAASL4F2WZY7KBXB');
+    expect(result.characters).toBe(0);
+});
+
+
+test('gen_text_code_v0_test_0001_hello_world', async () => {
+    const result = await gen_text_code(
+      "Hello World",
+        64
+    );
+    expect(result.iscc).toBe('ISCC:EAASKDNZNYGUUF5A');
+    expect(result.characters).toBe(10);
+});
+
+test('gen_text_code_v0_test_0002_hello_world_256_bits', async () => {
+    const result = await gen_text_code(
+      "Hello World",
+      256
+    );
+    expect(result.iscc).toBe('ISCC:EADSKDNZNYGUUF5AMFEJLZ5P66CP5YKCOA3X7F36RWE4CIRCBTUWXYY');
+    expect(result.characters).toBe(10);
+}); 
+
+test('gen_text_code_v0_test_0003_i18n', async () => {
+    const result = await gen_text_code(
+      "Iñtërnâtiônàlizætiøn☃    Iñtërnâtiônàlizætiøn☃",
+      256
+    );
+    expect(result.iscc).toBe('ISCC:EADTJCW2DT555KK6DEQAR5DQT7VYJGZM6CXHG3BM56WOMQDDVS7754I');
+    expect(result.characters).toBe(42);
+}); 
+
+test('gen_text_code_v0_test_0004_more', async () => {
+    const result = await gen_text_code(
+      "Their most significant and usefull property of similarity-preserving fingerprints gets lost in the fragmentation of individual, propietary and use case specific implementations. The real benefit lies in similarity preservation beyond your local data archive on a global scale accross vendors.\n",
+      128
+    );
+    expect(result.iscc).toBe('ISCC:EABZHFKU6PNI7UVWYEEIQLOYHYLX6');
+    expect(result.characters).toBe(249);
+}); 
