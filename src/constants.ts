@@ -1,5 +1,6 @@
 export const METACODE_BITS: number = 64;
 export const TEXT_BITS: number = 64;
+export const IMAGE_BITS: number = 64;
 export const META_TRIM_NAME: number = 128;
 export const META_NGRAM_SIZE_TEXT: number = 3;
 export const META_NGRAM_SIZE_BYTES: number = 4;
@@ -107,5 +108,10 @@ export interface IMetaCodeResult {
 export interface ICodeContentTextResult {
     iscc: string;
     characters: number;
+}
+
+
+export interface ICodeContentImageResult {
+    iscc: string;
 }
 
