@@ -41,9 +41,9 @@ This library is under development. It is not ready for production. The current d
 |                    |         | &#x2611; test_0002_hello_world_256_bits
 |                    |         | &#x2611; test_0003_i18n
 |                    |         | &#x2611; test_0004_more    
-| gen_image_code_v0  |  TODO   | &#x2610; test_0000_all_black_64 
-|                    |         | &#x2610; test_0001_all_white_128 
-|                    |         | &#x2610; test_0003_img_256 
+| gen_image_code_v0  |  Done   | &#x2611; test_0000_all_black_64 
+|                    |         | &#x2611; test_0001_all_white_128 
+|                    |         | &#x2611; test_0003_img_256 
 | gen_audio_code_v0  |  TODO   | &#x2610; test_0000_empty_64
 |                    |         | &#x2610; test_0001_one_128 
 |                    |         | &#x2610; test_0002_two_256
