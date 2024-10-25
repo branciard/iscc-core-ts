@@ -105,13 +105,5 @@ export interface IMetaCodeResult {
     version: number;
 }
 
-export interface ICodeContentTextResult {
-    iscc: string;
-    characters: number;
-}
 
-
-export interface ICodeContentImageResult {
-    iscc: string;
-}
 

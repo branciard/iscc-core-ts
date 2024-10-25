@@ -1,5 +1,3 @@
-
-import {  ICodeContentImageResult, TEXT_NGRAM_SIZE } from './constants';
 import { text_collapse } from './content-normalization';
 import { sliding_window } from './utils';
 import { algMinhash256 } from './minhash';
@@ -17,7 +15,9 @@ export function gen_image_code(
     pixels: number[],
     bits?: number,
     version?: number
-): ICodeContentImageResult{
+): {
+    iscc: string
+}{
     if (!version) {
         version = 0;
     }
@@ -38,7 +38,9 @@ export function gen_image_code(
 export function gen_image_code_v0(
     pixels: number[],
    bits?: number
-): ICodeContentImageResult {
+): {
+    iscc: string
+} {
 
 
     const digest = Buffer.from(soft_hash_image_v0(pixels,bits ? bits : IMAGE_BITS)).toString('hex');

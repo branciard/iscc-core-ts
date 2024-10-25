@@ -1,5 +1,5 @@
 
-import {  ICodeContentTextResult, TEXT_NGRAM_SIZE } from './constants';
+import { TEXT_NGRAM_SIZE } from './constants';
 import { text_collapse } from './content-normalization';
 import { sliding_window } from './utils';
 import { algMinhash256 } from './minhash';
@@ -17,7 +17,10 @@ export function gen_text_code(
     text: string,
     bits?: number,
     version?: number
-): ICodeContentTextResult{
+): { 
+    iscc: string;
+    characters: number;
+    } {
     if (!version) {
         version = 0;
     }
@@ -38,7 +41,10 @@ export function gen_text_code(
 export function gen_text_code_v0(
    text: string,
    bits?: number
-): ICodeContentTextResult {
+):{ 
+iscc: string;
+characters: number;
+} {
 
 
     
