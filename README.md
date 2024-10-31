@@ -44,11 +44,11 @@ This library is under development. It is not ready for production. The current d
 | gen_image_code_v0  |  Done   | &#x2611; test_0000_all_black_64 
 |                    |         | &#x2611; test_0001_all_white_128 
 |                    |         | &#x2611; test_0003_img_256 
-| gen_audio_code_v0  |  TODO   | &#x2610; test_0000_empty_64
-|                    |         | &#x2610; test_0001_one_128 
-|                    |         | &#x2610; test_0002_two_256
-|                    |         | &#x2610; test_0003_test_neg_256
-|                    |         | &#x2610; test_0004_cv_256
+| gen_audio_code_v0  |  Done   | &#x2611; test_0000_empty_64
+|                    |         | &#x2611; test_0001_one_128 
+|                    |         | &#x2611; test_0002_two_256
+|                    |         | &#x2611; test_0003_test_neg_256
+|                    |         | &#x2611; test_0004_cv_256
 | gen_video_code_v0  |  TODO   | &#x2610; test_0000_one_zero_frame_64
 |                    |         | &#x2610; test_0001_multiple_frames_128
 |                    |         | &#x2610; test_0003_range_256
