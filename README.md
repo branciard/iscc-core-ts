@@ -49,9 +49,9 @@ This library is under development. It is not ready for production. The current d
 |                    |         | &#x2611; test_0002_two_256
 |                    |         | &#x2611; test_0003_test_neg_256
 |                    |         | &#x2611; test_0004_cv_256
-| gen_video_code_v0  |  TODO   | &#x2610; test_0000_one_zero_frame_64
-|                    |         | &#x2610; test_0001_multiple_frames_128
-|                    |         | &#x2610; test_0003_range_256
+| gen_video_code_v0  |  Done   | &#x2611; test_0000_one_zero_frame_64
+|                    |         | &#x2611; test_0001_multiple_frames_128
+|                    |         | &#x2611; test_0003_range_256
 | gen_mixed_code_v0  |  TODO   | &#x2610; test_0000_std_64
 |                    |         | &#x2610; test_0001_128_truncated 
 | gen_data_code_v0   |  TODO   | &#x2610; test_0000_two_bytes_64
@@ -84,7 +84,7 @@ Install node 21
 nvm install --lts
 Installing latest LTS version.
 v20.18.0 is already installed.
-Now using node v20.18.0 (npm v10.8.2)
+Now using node v22.11.0 (npm v10.9.0)
 ```
 
 # Install and build

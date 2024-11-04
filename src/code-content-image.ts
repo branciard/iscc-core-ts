@@ -1,7 +1,3 @@
-import { text_collapse } from './content-normalization';
-import { sliding_window } from './utils';
-import { algMinhash256 } from './minhash';
-import { xxHash32 } from 'js-xxhash';
 import { encode_component } from './codec';
 import {
     MainTypes,
