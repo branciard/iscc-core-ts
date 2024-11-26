@@ -52,8 +52,8 @@ This library is under development. It is not ready for production. The current d
 | gen_video_code_v0  |  Done   | &#x2611; test_0000_one_zero_frame_64
 |                    |         | &#x2611; test_0001_multiple_frames_128
 |                    |         | &#x2611; test_0003_range_256
-| gen_mixed_code_v0  |  TODO   | &#x2610; test_0000_std_64
-|                    |         | &#x2610; test_0001_128_truncated 
+| gen_mixed_code_v0  |  Done   | &#x2611; test_0000_std_64
+|                    |         | &#x2611; test_0001_128_truncated 
 | gen_data_code_v0   |  TODO   | &#x2610; test_0000_two_bytes_64
 |                    |         | &#x2610; test_0001_empty_64
 |                    |         | &#x2610; test_0002_zero_128
