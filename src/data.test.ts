@@ -4,6 +4,7 @@ import { gen_text_code } from './code-content-text';
 import { gen_image_code } from './code-content-image';
 import { gen_audio_code } from './code-content-audio';
 import { gen_video_code } from './code-content-video';
+import { gen_mixed_code } from './code-content-mixed';
 
 test('gen_meta_code_v0_test_0001_title_only', async () => {
     const result = await gen_meta_code('Die Unendliche Geschichte');
@@ -427,3 +428,22 @@ test('gen_video_code_v0_test_0003_range_256', async () => {
     );
     expect(result.iscc).toBe('ISCC:EMDVFD4RIMPXYSWSNEZPYBZ2FDFMSPZBUMDRUFJPYKJFXWXNDUMQAYI');
 });
+
+test('gen_mixed_code_v0_test_0000_std_64', async () => {
+    const result = await gen_mixed_code(
+        ["EUA6GIKXN42IQV3S", "EIAUKMOUIOYZCKA5", "EQA6JK5IEKO6E732", "EIAU2XRWOT4AKMTZ"],
+        64
+    );
+    expect(result.iscc).toBe('ISCC:EQASNZJ36ZT33AL7');
+    expect(result.parts.toString()).toBe(["EUA6GIKXN42IQV3S", "EIAUKMOUIOYZCKA5", "EQA6JK5IEKO6E732", "EIAU2XRWOT4AKMTZ"].toString());
+});
+
+test('gen_mixed_code_v0_test_0001_128_truncated', async () => {
+    const result = await gen_mixed_code(
+        ["EQCR2VTB6AUI2J6A5AOYMRA2BNPNTBQS2GGNFQ2DUU", "EAC7ULQD5WEKFMNQUZWWYK5NHTATG4OV62AMIUWLYI", "EACQRBYECQSWFDC5JYDLCCJNF72Q4IYOXV3POUHRNI", "EEC453X23MWGUEZQC3SG7UJMY65HQYFQDJMO4CAL5A"],
+        128
+    );
+    expect(result.iscc).toBe('ISCC:EQBSBXXOMP6SZ2VX6DXG332JFUX76');
+    expect(result.parts.toString()).toBe(["EQCR2VTB6AUI2J6A5AOYMRA2BNPNTBQS2GGNFQ2DUU", "EAC7ULQD5WEKFMNQUZWWYK5NHTATG4OV62AMIUWLYI", "EACQRBYECQSWFDC5JYDLCCJNF72Q4IYOXV3POUHRNI", "EEC453X23MWGUEZQC3SG7UJMY65HQYFQDJMO4CAL5A"].toString());
+});
+
