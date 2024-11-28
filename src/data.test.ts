@@ -5,6 +5,7 @@ import { gen_image_code } from './code-content-image';
 import { gen_audio_code } from './code-content-audio';
 import { gen_video_code } from './code-content-video';
 import { gen_mixed_code } from './code-content-mixed';
+import { gen_data_code } from './code-data';
 
 test('gen_meta_code_v0_test_0001_title_only', async () => {
     const result = await gen_meta_code('Die Unendliche Geschichte');
@@ -447,3 +448,48 @@ test('gen_mixed_code_v0_test_0001_128_truncated', async () => {
     expect(result.parts.toString()).toBe(["EQCR2VTB6AUI2J6A5AOYMRA2BNPNTBQS2GGNFQ2DUU", "EAC7ULQD5WEKFMNQUZWWYK5NHTATG4OV62AMIUWLYI", "EACQRBYECQSWFDC5JYDLCCJNF72Q4IYOXV3POUHRNI", "EEC453X23MWGUEZQC3SG7UJMY65HQYFQDJMO4CAL5A"].toString());
 });
 
+test('gen_data_code_v0_test_0000_two_bytes_64', async () => {
+    const result = await gen_data_code(
+        Buffer.from([0xff,0x00]),
+         64
+    );
+    expect(result.iscc).toBe('ISCC:GAAXL2XYM5BQIAZ3');
+ });
+
+ test('gen_data_code_v0_test_0001_empty_64', async () => {
+    const result = await gen_data_code(
+        Buffer.from([]),
+         64
+    );
+    expect(result.iscc).toBe('ISCC:GAASL4F2WZY7KBXB');
+ });
+
+
+ test('gen_data_code_v0_test_0002_zero_128', async () => {
+    const result = await gen_data_code(
+        Buffer.from([0x00]),
+        128
+    );
+    expect(result.iscc).toBe('ISCC:GABXOD4P2IS6YHS2XOK6IBVPVXPPG');
+ });
+
+ test('gen_data_code_v0_test_0003_static_256', async () => {
+    // Create sequential numbers from 1 to 2048 in little-endian format
+    const data = Buffer.alloc(2048 * 4); // 4 bytes per number
+    for (let i = 0; i < 2048; i++) {
+        // Write each number as a 32-bit little-endian integer
+        data.writeUInt32LE(i + 1, i * 4);
+    }
+    
+    // Create input object matching the Python test format
+    const input = {
+        stream: data,
+        bits: 256
+    };
+    
+    const result = await gen_data_code(input.stream, input.bits);
+    
+    expect(result).toEqual({
+        iscc: "ISCC:GAD2FL7K437RJZK2MMLL4C2672JVQTMGJYYZ3KAINZRWETNWFES3KYA"
+    });
+});
