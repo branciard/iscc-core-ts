@@ -25,7 +25,8 @@ import {
     MainTypes,
     SubTypes,
     Version,
-    IMetaCodeResult
+    IMetaCodeResult,
+    ST
 } from './constants';
 
 /**
@@ -134,7 +135,7 @@ export async function gen_meta_code_v0(
 
     const meta_code = encode_component(
         MainTypes.META,
-        SubTypes.NONE,
+        ST.NONE,
         Version.V0,
         bits ? bits : METACODE_BITS,
         meta_code_digest

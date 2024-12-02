@@ -6,6 +6,7 @@ import { gen_audio_code } from './code-content-audio';
 import { gen_video_code } from './code-content-video';
 import { gen_mixed_code } from './code-content-mixed';
 import { gen_data_code } from './code-data';
+import { gen_instance_code } from './code-instance';
 
 test('gen_meta_code_v0_test_0001_title_only', async () => {
     const result = await gen_meta_code('Die Unendliche Geschichte');
@@ -493,3 +494,46 @@ test('gen_data_code_v0_test_0000_two_bytes_64', async () => {
         iscc: "ISCC:GAD2FL7K437RJZK2MMLL4C2672JVQTMGJYYZ3KAINZRWETNWFES3KYA"
     });
 });
+
+
+test('gen_instance_code_v0_test_0000_empty_64', async () => {
+    const result = await gen_instance_code(
+        Buffer.from([]),
+        64
+    );
+    expect(result.iscc).toBe('ISCC:IAA26E2JXH27TING');
+    expect(result.datahash).toBe('1e20af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262');
+    expect(result.filesize).toBe(0);
+ });
+
+ test('gen_instance_code_v0_test_0001_zero_128', async () => {
+    const result = await gen_instance_code(
+        Buffer.from([0x00]),
+        128
+    );
+    expect(result.iscc).toBe('ISCC:IABS2OW637YRWYPRJSEG4NNPUA3HG');
+    expect(result.datahash).toBe('1e202d3adedff11b61f14c886e35afa036736dcd87a74d27b5c1510225d0f592e213');
+    expect(result.filesize).toBe(1);
+ });
+
+ test('gen_instance_code_v0_test_0002_static_256', async () => {
+        // Create sequential numbers from 1 to 2048 in little-endian format
+        const data = Buffer.alloc(2048 * 4); // 4 bytes per number
+        for (let i = 0; i < 2048; i++) {
+            // Write each number as a 32-bit little-endian integer
+            data.writeUInt32LE(i + 1, i * 4);
+        }
+        
+        // Create input object matching the Python test format
+        const input = {
+            stream: data,
+            bits: 256
+        };
+        
+    const result = await gen_instance_code(
+        input.stream, input.bits
+    );
+    expect(result.iscc).toBe('ISCC:IAD66JNRTSKU5FLU2L7POWZNQTYKDOYQRGQJLJ24E5DWM7MPWYAPH7Q');
+    expect(result.datahash).toBe('1e20ef25b19c954e9574d2fef75b2d84f0a1bb1089a095a75c2747667d8fb600f3fe');
+    expect(result.filesize).toBe(8192);
+ });

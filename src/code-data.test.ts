@@ -1,4 +1,3 @@
-import seedrandom from 'seedrandom';
 import { soft_hash_data_v0, gen_data_code_v0, gen_data_code } from './code-data';
 import { DataHasherV0 } from './code-data';
 

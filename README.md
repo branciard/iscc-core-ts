@@ -58,9 +58,9 @@ This library is under development. It is not ready for production. The current d
 |                    |         | &#x2611; test_0001_empty_64
 |                    |         | &#x2611; test_0002_zero_128
 |                    |         | &#x2611; test_0003_static_256
-| gen_instance_code_v0   |  TODO   | &#x2610; test_0000_empty_64
-|                    |         | &#x2610; test_0001_zero_128
-|                    |         | &#x2610; test_0002_static_256
+| gen_instance_code_v0   |  Done   | &#x2611; test_0000_empty_64
+|                    |         | &#x2611; test_0001_zero_128
+|                    |         | &#x2611; test_0002_static_256
 | gen_iscc_code_v0   |  TODO   | &#x2610; test_0000_standard
 |                    |         | &#x2610; test_0001_no_meta
 |                    |         | &#x2610; test_0002_no_meta_content_256
