@@ -393,10 +393,7 @@ export function encode_units(units: MainTypes[]): number {
  */
 export function iscc_validate(iscc: string, { strict = true } = {}): boolean {
     // Basic regex validation
-    console.log('iscc', iscc);
-    console.log('CANONICAL_REGEX', CANONICAL_REGEX);
     const match = CANONICAL_REGEX.test(iscc);
-    console.log('match', match);
     if (!match) {
         if (strict) {
             throw new Error("ISCC string does not match ^ISCC:[A-Z2-7]{10,68}$");
@@ -593,10 +590,6 @@ export function iscc_decode(
  */
 export function iscc_type_id(iscc: string): string {
     const [mt, st, ver, len, _] = iscc_decode(iscc);
-    console.log('mt', mt);
-    console.log('st', st);
-    console.log('ver', ver);
-    console.log('len', len);
     const mtype = MainTypes[mt];
     const stype = SUBTYPE_MAP[mt][st];
 

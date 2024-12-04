@@ -137,7 +137,6 @@ test('test_decode_base64', () => {
             .padStart(2, '0')
     ).join('');
     
-    console.log("data"+data)
     const encoded = encode_base64(data);
     const decoded = decode_base64(encoded);
     
