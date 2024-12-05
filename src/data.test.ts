@@ -7,6 +7,7 @@ import { gen_video_code } from './code-content-video';
 import { gen_mixed_code } from './code-content-mixed';
 import { gen_data_code } from './code-data';
 import { gen_instance_code } from './code-instance';
+import { gen_iscc_code} from './iscc-code';    
 
 test('gen_meta_code_v0_test_0001_title_only', async () => {
     const result = await gen_meta_code('Die Unendliche Geschichte');
@@ -536,4 +537,42 @@ test('gen_instance_code_v0_test_0000_empty_64', async () => {
     expect(result.iscc).toBe('ISCC:IAD66JNRTSKU5FLU2L7POWZNQTYKDOYQRGQJLJ24E5DWM7MPWYAPH7Q');
     expect(result.datahash).toBe('1e20ef25b19c954e9574d2fef75b2d84f0a1bb1089a095a75c2747667d8fb600f3fe');
     expect(result.filesize).toBe(8192);
+ });
+
+
+ test('gen_iscc_code_v0_test_0000_standard', async () => {
+    const result =  gen_iscc_code(
+        ["AAAYPXW445FTYNJ3", "EAARMJLTQCUWAND2", "GABVVC5DMJJGYKZ4ZBYVNYABFFYXG", "IADWIK7A7JTUAQ2D6QARX7OBEIK3OOUAM42LOBLCZ4ZOGDLRHMDL6TQ"]
+    );
+    expect(result.iscc).toBe('ISCC:KACYPXW445FTYNJ3CYSXHAFJMA2HUWULUNRFE3BLHRSCXYH2M5AEGQY');
+ });
+
+
+ test('gen_iscc_code_v0_test_0001_no_meta', async () => {
+    const result = gen_iscc_code(
+        ["EAARMJLTQCUWAND2", "GABVVC5DMJJGYKZ4ZBYVNYABFFYXG", "IADWIK7A7JTUAQ2D6QARX7OBEIK3OOUAM42LOBLCZ4ZOGDLRHMDL6TQ"]
+    );
+    expect(result.iscc).toBe('ISCC:KAARMJLTQCUWAND2LKF2GYSSNQVTYZBL4D5GOQCDIM');
+ });
+
+
+ test('gen_iscc_code_v0_test_0002_no_meta_content_256', async () => {
+    const result =  gen_iscc_code(
+        ["GABVVC5DMJJGYKZ4ZBYVNYABFFYXG", "IADWIK7A7JTUAQ2D6QARX7OBEIK3OOUAM42LOBLCZ4ZOGDLRHMDL6TQ"]
+    );
+    expect(result.iscc).toBe('ISCC:KUAFVC5DMJJGYKZ4MQV6B6THIBBUG');
+ });
+
+ test('gen_iscc_code_v0_test_0003_no_meta_content_128', async () => {
+    const result =  gen_iscc_code(
+        ["GAAQQICFKJYKY4KU", "IADWIK7A7JTUAQ2D6QARX7OBEIK3OOUAM42LOBLCZ4ZOGDLRHMDL6TQ"]
+    );
+    expect(result.iscc).toBe('ISCC:KUAAQICFKJYKY4KUMQV6B6THIBBUG');
+ });
+
+ test('gen_iscc_code_v0_test_0004_ordering', async () => {
+    const result =  gen_iscc_code(
+        ["EAARMJLTQCUWAND2", "AAAYPXW445FTYNJ3", "IADWIK7A7JTUAQ2D6QARX7OBEIK3OOUAM42LOBLCZ4ZOGDLRHMDL6TQ", "GABVVC5DMJJGYKZ4ZBYVNYABFFYXG"]
+    );
+    expect(result.iscc).toBe('ISCC:KACYPXW445FTYNJ3CYSXHAFJMA2HUWULUNRFE3BLHRSCXYH2M5AEGQY');
  });

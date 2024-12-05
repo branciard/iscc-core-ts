@@ -61,11 +61,11 @@ This library is under development. It is not ready for production. The current d
 | gen_instance_code_v0   |  Done   | &#x2611; test_0000_empty_64
 |                    |         | &#x2611; test_0001_zero_128
 |                    |         | &#x2611; test_0002_static_256
-| gen_iscc_code_v0   |  TODO   | &#x2610; test_0000_standard
-|                    |         | &#x2610; test_0001_no_meta
-|                    |         | &#x2610; test_0002_no_meta_content_256
-|                    |         | &#x2610; test_0003_no_meta_content_128
-|                    |         | &#x2610; test_0004_ordering
+| gen_iscc_code_v0   |  Done   | &#x2611; test_0000_standard
+|                    |         | &#x2611; test_0001_no_meta
+|                    |         | &#x2611; test_0002_no_meta_content_256
+|                    |         | &#x2611; test_0003_no_meta_content_128
+|                    |         | &#x2611; test_0004_ordering
 
 
 
@@ -101,6 +101,29 @@ npm run test
 npm run test-isolated
 npm run test-esm
 npm run test-esm-isolated
+```
+
+Expected tests result :
+
+```sh
+ PASS  src/content-normalization.test.ts
+ PASS  src/cdc.test.ts
+ PASS  src/code-content-audio.test.ts
+ PASS  src/iscc-code.test.ts
+ PASS  src/code-content-image.test.ts
+ PASS  src/code-content-text.test.ts
+ PASS  src/minhash.test.ts
+ PASS  src/utils.test.ts
+ PASS  src/code-content-video.test.ts
+ PASS  src/metacode.test.ts
+ PASS  src/codec.test.ts
+ PASS  src/code-content-mixed.test.ts
+ PASS  src/code-instance.test.ts
+ PASS  src/data.test.ts
+ PASS  src/code-data.test.ts
+
+Test Suites: 15 passed, 15 total
+Tests:       192 passed, 192 total
 ```
 
 # Funding
