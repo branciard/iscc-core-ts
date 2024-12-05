@@ -1,6 +1,6 @@
 {
   "name": "iscc-core-ts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Iscc core TypeScript implementation of iscc-core reference",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",

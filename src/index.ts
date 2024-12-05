@@ -3,3 +3,7 @@ export * from './code-content-text';
 export * from './code-content-image';
 export * from './code-content-audio';
 export * from './code-content-video';
+export * from './code-content-mixed';
+export * from './code-instance';
+export * from './code-data';
+export * from './iscc-code';
