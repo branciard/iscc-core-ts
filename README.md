@@ -83,13 +83,15 @@ Install node 21
 ```sh
 nvm install --lts
 Installing latest LTS version.
-v20.18.0 is already installed.
-Now using node v22.11.0 (npm v10.9.0)
+v22.13.1 is already installed.
+Now using node v22.13.1 (npm v10.9.2)
+
 ```
 
 # Install and build
 
 ```sh
+npm install -g npm@11.1.0
 npm i
 npm run build
 ```
