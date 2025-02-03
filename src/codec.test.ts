@@ -1,4 +1,4 @@
-import { decode_base32, decode_base32hex, decode_base64, decode_header, decode_length, decode_varnibble, encode_base32, encode_base32hex, encode_base64, encode_header, encode_varnibble, iscc_clean, iscc_decode, iscc_explain, iscc_type_id, iscc_validate, toHexString } from "./codec";
+import { decode_base32, decode_base32hex, decode_base64, decode_header, decode_length, decode_varnibble, encode_base32, encode_base32hex, encode_base64, encode_header, encode_varnibble, iscc_clean, iscc_decode, iscc_explain, iscc_type_id, iscc_validate, toHexString, encode_base58, decode_base58 } from "./codec";
 import { MainTypes } from "./constants";
 import { gen_meta_code } from "./metacode";
 
@@ -285,26 +285,14 @@ test('test_explain_maintype_iscc_id_counter', () => {
     expect(iscc_explain(iscc)).toBe("ID-PRIVATE-V0-72-20250db96e0d4a17-1");
 });
 
+test('test_base58_roundtrip', () => {
+    // Test roundtrip encoding/decoding with random data
+    const testData = new Uint8Array(32);
+    crypto.getRandomValues(testData);
+    
+    const encoded = encode_base58(testData);
+    const decoded = decode_base58(encoded);
+    
+    expect(decoded).toEqual(testData);
+});
 
-
-/*
-
-
-def test_explain_maintype_iscc_code():
-    iscc = "KICQOCPJM46YUUCBMWS6FFXRGM3LJOU5MZOVPOUHIJOHPI324GKN67Q"
-    assert (
-        ic.iscc_explain(iscc)
-        == "ISCC-AUDIO-V0-MCDI-0709e9673d8a504165a5e296f13336b4ba9d665d57ba87425c77a37ae194df7e"
-    )
-
-
-def test_explain_maintype_iscc_id_no_counter():
-    iscc = "MEAAO5JRN22FN2M2"
-    assert ic.iscc_explain(iscc) == "ID-BITCOIN-V0-64-0775316eb456e99a"
-
-
-def test_explain_maintype_iscc_id_counter():
-    iscc = "ISCC:MAASAJINXFXA2SQXAE"
-    assert ic.iscc_explain(iscc) == "ID-PRIVATE-V0-72-20250db96e0d4a17-1"
-
-*/
