@@ -2,8 +2,13 @@ export function sliding_window(seq: string, width: number) {
     if (width < 2) {
         throw new RangeError('Sliding window width must be 2 or bigger.');
     }
-    const idx = [...Array(Math.max(seq.length - width + 1, 1)).keys()];
-    return idx.map((i) => seq.substring(i, i + width));
+
+    // Convert to array of Unicode code points to handle surrogate pairs correctly issue #1
+    const codePoints = Array.from(seq);
+    const length = codePoints.length;
+
+    const idx = [...Array(Math.max(length - width + 1, 1)).keys()];
+    return idx.map((i) => codePoints.slice(i, i + width).join(''));
 }
 
 export const hexBytesToBinary = (hex: string): string => {

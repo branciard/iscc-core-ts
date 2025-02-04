@@ -34,11 +34,7 @@ export function text_remove_newlines(text: string): string {
 
 function isCharControlCategoryUnicode(s: string) {
     const cc = XRegExp('^\\p{Control}+$');
-    const cf = XRegExp('^\\p{Format}+$');
-    const cs = XRegExp('^\\p{Surrogate}+$');
-    const co = XRegExp('^\\p{Private_Use}+$');
-    const cn = XRegExp('^\\p{Unassigned}+$');
-    if (cc.test(s) || cf.test(s) || cs.test(s) || co.test(s) || cn.test(s)) {
+    if (cc.test(s)) {
         return true;
     } else {
         return false;
@@ -62,8 +58,8 @@ function isCharNewLinesUnicode(s: string) {
  */
 
 export function text_clean(text: string): string {
+  
     text = text.normalize('NFKC');
-
     let textWithoutCC = '';
     const charsWithCC = Array.from(text);
     // Remove control characters
@@ -89,24 +85,6 @@ export function text_clean(text: string): string {
         textFiltered = textFiltered.concat(c);
     }
     text = textFiltered;
-
-    /* Keep these control characters (Cc) that are commonly considered white-space:
-     */
-
-    // \u0009, # Horizontal Tab (TAB)
-    //text = text.replace(/\u0009/gu, ' ');
-
-    // \u000A, # Linefeed
-    //text = text.replace(/\u000A/gu, ' ');
-
-    // \u000D, # Carriage Return (CR)
-    //text = text.replace(/\u000D/gu, ' ');
-
-    // 6. Keep or remove whitespace (remove duplicate whitespace) according to keep_ws
-    //  if(!keep_ws){
-    //      text = text.replace(/\s+/g, ' ');
-    // }
-
     return text.trim();
 }
 

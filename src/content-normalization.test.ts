@@ -10,10 +10,10 @@ test('Test trim OK with text_clean call', () => {
     expect(result).toBe('hello world');
 });
 
-test('Test text_clean remove some Remove control characters ', () => {
+test('Test text_clean do not remove Private_Use_unicode ', () => {
     const Private_Use_unicode = '\u{E000}';
     const result = text_clean(' hello ' + Private_Use_unicode + ' world ');
-    expect(result).toBe('hello  world');
+    expect(result).toBe('hello ' + Private_Use_unicode + ' world');
 });
 
 test('Test toLowerCase OK', () => {
@@ -65,7 +65,7 @@ test('Test filter Mark unicode OK', () => {
     gc ; Cs                               ; Surrogate
  */
 
-test('Test filter Other unicode OK', () => {
+test('Test filter Other unicode on text_collapse OK', () => {
     const Private_Use_unicode = '\u{E000}';
     const result = text_collapse('hello world' + Private_Use_unicode);
     expect(result).toBe('helloworld');

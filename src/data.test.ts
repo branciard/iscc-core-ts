@@ -234,18 +234,9 @@ test('gen_meta_code_v0_test_0013_norm_i18n_256', async () => {
     );
     expect(result.name).toBe('Ç 가 Ω H 1 { i9 1⁄4 dž ⫝̸ ȴ ȷ ɂ ć');
     expect(result.version).toBe(0);
-    //expect(result.description).toBe("Iñtërnâtiôn\nàlizætiøn☃"+POP_UNICODE+" –  is a tric ky   thing!");
-    //expect(result.metahash).toBe("1e20e5b0e0d2ee04e7606b7dcb6f6901f4bf78f8b850a91566383b86b22c5127768d");
-    //expect(result.iscc).toBe("ISCC:AAD6KOWKOF334VRANKFXRZXZWMVZZDZZAGHC3ON7O5ENTBJ3TXJ5XYQ");
-    expect(result.description).toBe(
-        'Iñtërnâtiôn\nàlizætiøn☃ –  is a tric ky   thing!'
-    );
-    expect(result.metahash).toBe(
-        '1e20c26498328693e2574e28e957f7290472c18056b5e7433664e77f7bbf680247fe'
-    );
-    expect(result.iscc).toBe(
-        'ISCC:AAD6KOWKOF33YVRANKFXRZXZSMBYZDZZAGHC3OP2M5ENTBJ3DKI4XYQ'
-    );
+    expect(result.description).toBe("Iñtërnâtiôn\nàlizætiøn☃"+POP_UNICODE+" –  is a tric ky   thing!");
+    expect(result.metahash).toBe("1e20e5b0e0d2ee04e7606b7dcb6f6901f4bf78f8b850a91566383b86b22c5127768d");
+    expect(result.iscc).toBe("ISCC:AAD6KOWKOF334VRANKFXRZXZWMVZZDZZAGHC3ON7O5ENTBJ3TXJ5XYQ");
 });
 
 test('gen_meta_code_v0_test_0014_meta_object_json', async () => {
