@@ -32,7 +32,7 @@ This library is under development. It is not ready for production. The current d
 |                    |         | &#x2611; test_0010_normalizeation
 |                    |         | &#x2611; test_0011_trim
 |                    |         | &#x2611; test_0012_trim_i18n
-|                    |         | &#x2610; test_0013_norm_i18n_256
+|                    |         | &#x2611; test_0013_norm_i18n_256
 |                    |         | &#x2611; test_0014_meta_object_json
 |                    |         | &#x2611; test_0015_meta_object_json_ld
 |                    |         | &#x2611; test_0016_meta_data_url
