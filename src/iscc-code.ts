@@ -1,5 +1,5 @@
 import { decode_header, decode_base32,iscc_clean,encode_units , encode_header, encode_base32, encode_header_to_uint8Array} from './codec';
-import { MainTypes, ST_ISCC, SubTypes, Version , IsccTuple } from './constants';
+import { MainTypes, ST_ISCC, Version , IsccTuple } from './constants';
 
 
 /**

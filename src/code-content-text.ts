@@ -7,7 +7,7 @@ import { xxHash32 } from 'js-xxhash';
 import { encode_component } from './codec';
 import {
     MainTypes,
-    SubTypes,
+    ST_CC,
     TEXT_BITS,
     Version
 } from './constants';
@@ -53,7 +53,7 @@ characters: number;
     const digest = Buffer.from(soft_hash_text_v0(text)).toString('hex');
     const text_code = encode_component(
         MainTypes.CONTENT,
-        SubTypes.TEXT,
+        ST_CC.TEXT,
         Version.V0,
         bits ? bits : TEXT_BITS,
         // fix bug https://github.com/nodejs/node/issues/21242 https://github.com/merkletreejs/merkletreejs/pull/91

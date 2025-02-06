@@ -1,6 +1,6 @@
 import { IHasher } from 'hash-wasm/dist/lib/WASMInterface';
 import { encode_component } from './codec';
-import { MainTypes, ST, SubTypes, Version } from './constants';
+import { MainTypes, ST, Version } from './constants';
 import { createBLAKE3 } from 'hash-wasm';
 
 export async function gen_instance_code(stream: Buffer, bits: number = 64): Promise<any> {

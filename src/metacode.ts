@@ -23,7 +23,6 @@ import {
     META_NGRAM_SIZE_TEXT,
     META_TRIM_NAME,
     MainTypes,
-    SubTypes,
     Version,
     IMetaCodeResult,
     ST

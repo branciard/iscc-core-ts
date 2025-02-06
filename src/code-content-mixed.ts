@@ -3,8 +3,8 @@ import { encode_component, decode_base32, decode_header, decode_length ,iscc_cle
 
 import {
     MainTypes,
+    ST_CC,
     MIXED_BITS,
-    SubTypes,
     Version
 } from './constants';
 import { alg_simhash } from './simhash';
@@ -34,7 +34,7 @@ export function gen_mixed_code_v0(
     const digest = soft_hash_codes_v0(digests, bits);
     const mixed_code = encode_component(
         MainTypes.CONTENT,
-        SubTypes.MIXED,
+        ST_CC.MIXED,
         Version.V0,
         bits ? bits : 64,
         digest

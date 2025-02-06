@@ -1,7 +1,7 @@
 import { encode_component } from './codec';
 import {
     MainTypes,
-    SubTypes,
+    ST_CC,
     IMAGE_BITS,
     Version
 } from './constants';
@@ -42,7 +42,7 @@ export function gen_image_code_v0(
     const digest = Buffer.from(soft_hash_image_v0(pixels,bits ? bits : IMAGE_BITS)).toString('hex');
     const image_code = encode_component(
         MainTypes.CONTENT,
-        SubTypes.IMAGE,
+        ST_CC.IMAGE,
         Version.V0,
         bits ? bits : IMAGE_BITS,
         // fix bug https://github.com/nodejs/node/issues/21242 https://github.com/merkletreejs/merkletreejs/pull/91

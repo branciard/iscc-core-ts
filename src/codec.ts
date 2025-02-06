@@ -10,7 +10,7 @@ import {
     ST,
     ST_ISCC,
     SUBTYPE_MAP,
-    SubTypes,
+    ST_CC,
     UNITS,
     Version
 } from './constants';
@@ -93,7 +93,7 @@ export function decode_length(mtype: MainTypes, length: number): number {
 
 export function encode_header(
     mtype: MainTypes,
-    stype: SubTypes | ST_ISCC.NONE | ST_ISCC.SUM | ST.NONE,
+    stype: ST_CC | ST_ISCC.NONE | ST_ISCC.SUM | ST.NONE,
     version: Version,
     length: number
 ): string {
@@ -104,7 +104,7 @@ export function encode_header(
 
 export function encode_header_to_uint8Array(
     mtype: MainTypes,
-    stype: SubTypes | ST_ISCC.SUM | ST_ISCC.NONE | ST.NONE,
+    stype: ST_CC | ST_ISCC.SUM | ST_ISCC.NONE | ST.NONE,
     version: Version,
     length: number
 ): Uint8Array {
@@ -132,7 +132,7 @@ export function encode_header_to_uint8Array(
  */
 export function decode_header(
     data: string
-): [MainTypes, SubTypes, Version, number, Uint8Array] {
+): [MainTypes, ST_CC|ST.NONE, Version, number, Uint8Array] {
     // Validate input
     if (!data || typeof data !== 'string') {
         throw new Error('Input must be a non-empty string');
@@ -177,7 +177,7 @@ export function decode_header(
 
     return [
         result[0] as MainTypes,
-        result[1] as SubTypes,
+        result[1] as ST_CC|ST.NONE,
         result[2] as Version,
         result[3],
         bytes
@@ -237,7 +237,7 @@ export function decode_varnibble(b: string): [number, string] {
 
 export function encode_component(
     mtype: MainTypes,
-    stype: SubTypes | ST_ISCC.NONE | ST_ISCC.SUM | ST.NONE,
+    stype: ST_CC | ST_ISCC.NONE | ST_ISCC.SUM | ST.NONE,
     version: Version,
     bit_length: number,
     digest: string
@@ -572,7 +572,7 @@ export function iscc_decompose(isccCode: string): string[] {
  */
 export function iscc_decode(
     iscc: string
-): [MainTypes, SubTypes, Version, number, Uint8Array] {
+): [MainTypes, ST_CC|ST.NONE, Version, number, Uint8Array] {
     const cleaned = iscc_clean(iscc_normalize(iscc));
     const data = decode_base32(cleaned);
     return decode_header(Buffer.from(data).toString('hex'));

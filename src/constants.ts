@@ -10,8 +10,6 @@ export const TEXT_NGRAM_SIZE = 13;
 
 
 
-
-
 /**
  * 
  *     """
@@ -40,55 +38,18 @@ export enum MainTypes {
     TESTMainType8 = 8
 }
 
-/*
-      ## ST - SubTypes
-    
-      | Uint | Symbol   | Bits | Purpose                                                 |
-      |----- |:---------|------|---------------------------------------------------------|
-      | 0    | NONE     | 0000 | For MainTypes that do not specify SubTypes              |
-      """
-    
-      NONE = 0
-    */
-
-    /*
-        """
-        ### ST_CC
-    
-        SubTypes for `MT.CONTENT`
-    
-        | Uint | Symbol   | Bits | Purpose                                                 |
-        |----- |:---------|------|---------------------------------------------------------|
-        | 0    | TEXT     | 0000 | Match on syntactic text similarity                      |
-        | 1    | IMAGE    | 0001 | Match on perceptual image similarity                    |
-        | 2    | AUDIO    | 0010 | Match on audio chroma similarity                        |
-        | 3    | VIDEO    | 0011 | Match on perceptual similarity                          |
-        | 4    | MIXED    | 0100 | Match on similarity of content codes                    |
-        """
-    */
-
-        // TO REMOVE and replace with ST_CC
-export enum SubTypes {
-    TEXT = 0,
-    IMAGE = 1,
-    AUDIO = 2,
-    VIDEO = 3,
-    MIXED = 4,
-    TESTSubTypes8 = 8
-}
 
 /**
  * ## ST - SubTypes
  * 
  * | Uint | Symbol   | Bits | Purpose                                                 |
  * |----- |:---------|------|---------------------------------------------------------|
- * | 0    | NONE     | 0000 | For MainTypes that do not specify SubTypes              |
+ * | 0    | NONE     | 0000 | For MainTypes that do not specify SubTypes    (META, DATA, and INSTANCE )           |
  */
 export enum ST {
     /** For MainTypes that do not specify SubTypes */
     NONE = 0
   }
-
 
 /**
  * ### ST_CC
@@ -103,16 +64,16 @@ export enum ST {
  * | 3    | VIDEO    | 0011 | Match on perceptual similarity                          |
  * | 4    | MIXED    | 0100 | Match on similarity of content codes                    |
  */
-/*
+
 export enum ST_CC {
     TEXT = 0,
     IMAGE = 1,
     AUDIO = 2,
     VIDEO = 3,
-    MIXED = 4
+    MIXED = 4,
+    TESTSubTypes8 = 8
   }
-    */
-  
+    
   /**
    * ### ST_ISCC
    * 
@@ -345,7 +306,7 @@ export type CDCGear = typeof CDC_GEAR;
 
 export const IO_READ_SIZE: number = 2097152;
 
-export type IsccTuple = [MainTypes, SubTypes, Version, number, Uint8Array];
+export type IsccTuple = [MainTypes, ST|ST_CC, Version, number, Uint8Array];
 
 /**
  * Regular expression for validating canonical ISCC codes.
@@ -382,14 +343,14 @@ export const MC_PREFIX = new Uint8Array([0xCC, 0x01]);
 // Alternative Buffer version if you're using Node.js
 export const MC_PREFIX_BUFFER = Buffer.from([0xCC, 0x01]);
 
-export const SUBTYPE_MAP: Record<MainTypes, typeof ST | typeof ST_ISCC | typeof ST_ID | typeof SubTypes> = {
+export const SUBTYPE_MAP: Record<MainTypes, typeof ST | typeof ST_ISCC | typeof ST_ID | typeof ST_CC> = {
     [MainTypes.META]: ST,
-    [MainTypes.SEMANTIC]: SubTypes,
-    [MainTypes.CONTENT]: SubTypes,
+    [MainTypes.SEMANTIC]: ST_CC,
+    [MainTypes.CONTENT]: ST_CC,
     [MainTypes.DATA]: ST,
     [MainTypes.INSTANCE]: ST,
     [MainTypes.ISCC]: ST_ISCC,
     [MainTypes.ID]: ST_ID,
     [MainTypes.FLAKE]: ST,
-    [MainTypes.TESTMainType8]: SubTypes
+    [MainTypes.TESTMainType8]: ST_CC
 };

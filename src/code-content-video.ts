@@ -3,7 +3,8 @@
 import { encode_component } from './codec';
 import {
     MainTypes,
-    SubTypes,
+    ST,
+    ST_CC,
     Version
 } from './constants';
 
@@ -305,7 +306,7 @@ export function gen_video_code_v0(frameSigs: FrameSig[], bits: number = 64): { i
     const digest = Buffer.from(soft_hash_video_v0(frameSigs, bits)).toString('hex');
     const video_code = encode_component(
         MainTypes.CONTENT,
-        SubTypes.VIDEO,
+        ST_CC.VIDEO,
         Version.V0,
         bits ? bits : 64,
         // fix bug https://github.com/nodejs/node/issues/21242 https://github.com/merkletreejs/merkletreejs/pull/91
