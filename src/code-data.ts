@@ -1,5 +1,5 @@
 import { encode_component } from './codec';
-import { MainTypes, ST, Version } from './constants';
+import { MT, ST, Version } from './constants';
 import { algCdcChunks } from './cdc';
 import { algMinhash256 } from './minhash';
 import { xxHash32 } from 'js-xxhash';
@@ -68,7 +68,7 @@ export class DataHasherV0 {
 
     code(bits: number = 64): string {
         return encode_component(
-            MainTypes.DATA,
+            MT.DATA,
             ST.NONE,
             Version.V0,
             bits,

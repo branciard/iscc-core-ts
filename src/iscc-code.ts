@@ -1,5 +1,5 @@
 import { decode_header, decode_base32,iscc_clean,encode_units , encode_header, encode_base32, encode_header_to_uint8Array} from './codec';
-import { MainTypes, ST_ISCC, Version , IsccTuple } from './constants';
+import { MT, ST_ISCC, Version , IsccTuple } from './constants';
 
 
 /**
@@ -36,14 +36,14 @@ export function gen_iscc_code_v0(codes: string[]): { iscc: string } {
         .sort((a, b) => a[0] - b[0]);
 
     const main_types = decoded.map(d => d[0]);
-    if (main_types[main_types.length - 2] !== MainTypes.DATA || 
-        main_types[main_types.length - 1] !== MainTypes.INSTANCE) {
+    if (main_types[main_types.length - 2] !== MT.DATA || 
+        main_types[main_types.length - 1] !== MT.INSTANCE) {
         throw new Error("ISCC-CODE requires at least MT.DATA and MT.INSTANCE units.");
     }
 
     // Determine SubType (generic mediatype)
     const sub_types = decoded
-        .filter(t => t[0] === MainTypes.SEMANTIC || t[0] === MainTypes.CONTENT)
+        .filter(t => t[0] === MT.SEMANTIC || t[0] === MT.CONTENT)
         .map(t => t[1]);
 
     if (new Set(sub_types).size > 1) {
@@ -61,7 +61,7 @@ export function gen_iscc_code_v0(codes: string[]): { iscc: string } {
 
     // Collect and truncate unit digests to 64-bit
     const digest =  concatenateDigests(decoded);
-    const header = encode_header_to_uint8Array(MainTypes.ISCC, st, Version.V0, encoded_length);
+    const header = encode_header_to_uint8Array(MT.ISCC, st, Version.V0, encoded_length);
     const code = encode_base32(Buffer.concat([header, digest]).toString('hex'));
     const iscc = "ISCC:" + code;
     return { iscc };

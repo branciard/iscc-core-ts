@@ -2,8 +2,7 @@
 
 import { encode_component } from './codec';
 import {
-    MainTypes,
-    ST,
+    MT,
     ST_CC,
     Version
 } from './constants';
@@ -306,7 +305,7 @@ export function gen_video_code_v0(frameSigs: FrameSig[], bits: number = 64): { i
      */
     const digest = Buffer.from(soft_hash_video_v0(frameSigs, bits)).toString('hex');
     const video_code = encode_component(
-        MainTypes.CONTENT,
+        MT.CONTENT,
         ST_CC.VIDEO,
         Version.V0,
         bits ? bits : 64,

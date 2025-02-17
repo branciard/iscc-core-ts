@@ -26,7 +26,7 @@ export const TEXT_NGRAM_SIZE = 13;
     """
 
  */
-export enum MainTypes {
+export enum MT {
     META = 0,
     SEMANTIC = 1,
     CONTENT = 2,
@@ -137,8 +137,6 @@ export enum ST_ID {
   }
 
 
-
-
 /*
         ## VS - Version
     
@@ -212,15 +210,15 @@ export enum Length {
 }
 
 // Define UNITS as readonly tuples
-export const UNITS: ReadonlyArray<ReadonlyArray<MainTypes>> = [
+export const UNITS: ReadonlyArray<ReadonlyArray<MT>> = [
     [],
-    [MainTypes.CONTENT],
-    [MainTypes.SEMANTIC],
-    [MainTypes.CONTENT, MainTypes.SEMANTIC],
-    [MainTypes.META],
-    [MainTypes.META, MainTypes.CONTENT],
-    [MainTypes.META, MainTypes.SEMANTIC],
-    [MainTypes.META, MainTypes.SEMANTIC, MainTypes.CONTENT],
+    [MT.CONTENT],
+    [MT.SEMANTIC],
+    [MT.CONTENT, MT.SEMANTIC],
+    [MT.META],
+    [MT.META, MT.CONTENT],
+    [MT.META, MT.SEMANTIC],
+    [MT.META, MT.SEMANTIC, MT.CONTENT],
 ] as const;
 
 
@@ -306,7 +304,7 @@ export type CDCGear = typeof CDC_GEAR;
 
 export const IO_READ_SIZE: number = 2097152;
 
-export type IsccTuple = [MainTypes, ST|ST_CC, Version, number, Uint8Array];
+export type IsccTuple = [MT, ST|ST_CC, Version, number, Uint8Array];
 
 /**
  * Regular expression for validating canonical ISCC codes.
@@ -343,14 +341,14 @@ export const MC_PREFIX = new Uint8Array([0xCC, 0x01]);
 // Alternative Buffer version if you're using Node.js
 export const MC_PREFIX_BUFFER = Buffer.from([0xCC, 0x01]);
 
-export const SUBTYPE_MAP: Record<MainTypes, typeof ST | typeof ST_ISCC | typeof ST_ID | typeof ST_CC> = {
-    [MainTypes.META]: ST,
-    [MainTypes.SEMANTIC]: ST_CC,
-    [MainTypes.CONTENT]: ST_CC,
-    [MainTypes.DATA]: ST,
-    [MainTypes.INSTANCE]: ST,
-    [MainTypes.ISCC]: ST_ISCC,
-    [MainTypes.ID]: ST_ID,
-    [MainTypes.FLAKE]: ST,
-    [MainTypes.TESTMainType8]: ST_CC
+export const SUBTYPE_MAP: Record<MT, typeof ST | typeof ST_ISCC | typeof ST_ID | typeof ST_CC> = {
+    [MT.META]: ST,
+    [MT.SEMANTIC]: ST_CC,
+    [MT.CONTENT]: ST_CC,
+    [MT.DATA]: ST,
+    [MT.INSTANCE]: ST,
+    [MT.ISCC]: ST_ISCC,
+    [MT.ID]: ST_ID,
+    [MT.FLAKE]: ST,
+    [MT.TESTMainType8]: ST_CC
 };

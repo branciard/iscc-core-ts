@@ -6,7 +6,7 @@ import { algMinhash256 } from './minhash';
 import { xxHash32 } from 'js-xxhash';
 import { encode_component } from './codec';
 import {
-    MainTypes,
+    MT,
     ST_CC,
     TEXT_BITS,
     Version
@@ -52,7 +52,7 @@ characters: number;
     const characters = text?text.length:0;
     const digest = Buffer.from(soft_hash_text_v0(text)).toString('hex');
     const text_code = encode_component(
-        MainTypes.CONTENT,
+        MT.CONTENT,
         ST_CC.TEXT,
         Version.V0,
         bits ? bits : TEXT_BITS,

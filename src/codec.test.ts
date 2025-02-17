@@ -1,13 +1,13 @@
 import { decode_base32, decode_base32hex, decode_base64, decode_header, decode_length, decode_varnibble, encode_base32, encode_base32hex, encode_base64, encode_header, encode_varnibble, iscc_clean, iscc_decode, iscc_explain, iscc_type_id, iscc_validate, toHexString, encode_base58, decode_base58 } from "./codec";
-import { MainTypes } from "./constants";
+import { MT } from "./constants";
 import { gen_meta_code } from "./metacode";
 
 
 
 
 test('test_main_type', () => {
-    expect(typeof MainTypes.META).toBe('number');
-    expect(MainTypes.META).toBe(0);
+    expect(typeof MT.META).toBe('number');
+    expect(MT.META).toBe(0);
 });
 
 
@@ -198,7 +198,7 @@ test('test_codec_clean_raises_multiple_colon', () => {
 });
 
 test('test_codec_decode_length_mt_iscc', () => {
-    expect(decode_length(MainTypes.ISCC, 3)).toBe(256);
+    expect(decode_length(MT.ISCC, 3)).toBe(256);
 });
 
 test('test_codec_decode_length_invalid_type_raises', () => {

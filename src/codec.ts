@@ -3,7 +3,7 @@ import bs58 from 'bs58';
 import { binaryArrayToUint8Array, rtrim } from './utils';
 import {
     CANONICAL_REGEX,
-    MainTypes,
+    MT,
     MC_PREFIX_BUFFER,
     MULTIBASE,
     PREFIXES,
@@ -28,29 +28,29 @@ export function toHexString(bytes: Uint8Array): string {
     return result;
 }
 
-export function encode_length(mtype: MainTypes, length: number): number {
+export function encode_length(mtype: MT, length: number): number {
     const error =
         'Invalid length [' + length + '] for MainType [' + mtype + ']';
     if (
-        mtype == MainTypes.META ||
-        mtype == MainTypes.SEMANTIC ||
-        mtype == MainTypes.CONTENT ||
-        mtype == MainTypes.DATA ||
-        mtype == MainTypes.INSTANCE ||
-        mtype == MainTypes.FLAKE
+        mtype == MT.META ||
+        mtype == MT.SEMANTIC ||
+        mtype == MT.CONTENT ||
+        mtype == MT.DATA ||
+        mtype == MT.INSTANCE ||
+        mtype == MT.FLAKE
     ) {
         if (length >= 32 && length % 32 == 0) {
             return Math.floor(length / 32) - 1;
         } else {
             throw Error(error);
         }
-    } else if (mtype == MainTypes.ISCC) {
+    } else if (mtype == MT.ISCC) {
         if (0 <= length && length <= 7) {
             return length;
         } else {
             throw Error(error);
         }
-    } else if (mtype == MainTypes.ID) {
+    } else if (mtype == MT.ID) {
         if (64 <= length && length <= 96) {
             return Math.floor((length - 64) / 8);
         } else {
@@ -72,19 +72,19 @@ export function encode_length(mtype: MainTypes, length: number): number {
  * @returns Number of bits
  * @throws Error if length is invalid for the given MainType
  */
-export function decode_length(mtype: MainTypes, length: number): number {
+export function decode_length(mtype: MT, length: number): number {
     if (
-        mtype === MainTypes.META ||
-        mtype === MainTypes.SEMANTIC ||
-        mtype === MainTypes.CONTENT ||
-        mtype === MainTypes.DATA ||
-        mtype === MainTypes.INSTANCE ||
-        mtype === MainTypes.FLAKE
+        mtype === MT.META ||
+        mtype === MT.SEMANTIC ||
+        mtype === MT.CONTENT ||
+        mtype === MT.DATA ||
+        mtype === MT.INSTANCE ||
+        mtype === MT.FLAKE
     ) {
         return (length + 1) * 32;
-    } else if (mtype === MainTypes.ISCC) {
+    } else if (mtype === MT.ISCC) {
         return decode_units(length).length * 64 + 128;
-    } else if (mtype === MainTypes.ID) {
+    } else if (mtype === MT.ID) {
         return length * 8 + 64;
     } else {
         throw new Error(`Invalid length ${length} for MainType ${mtype}`);
@@ -92,7 +92,7 @@ export function decode_length(mtype: MainTypes, length: number): number {
 }
 
 export function encode_header(
-    mtype: MainTypes,
+    mtype: MT,
     stype: ST_CC | ST_ISCC.NONE | ST_ISCC.SUM | ST.NONE,
     version: Version,
     length: number
@@ -103,7 +103,7 @@ export function encode_header(
 }
 
 export function encode_header_to_uint8Array(
-    mtype: MainTypes,
+    mtype: MT,
     stype: ST_CC | ST_ISCC.SUM | ST_ISCC.NONE | ST.NONE,
     version: Version,
     length: number
@@ -132,7 +132,7 @@ export function encode_header_to_uint8Array(
  */
 export function decode_header(
     data: string
-): [MainTypes, ST_CC|ST.NONE, Version, number, Uint8Array] {
+): [MT, ST_CC|ST.NONE, Version, number, Uint8Array] {
     // Validate input
     if (!data || typeof data !== 'string') {
         throw new Error('Input must be a non-empty string');
@@ -176,7 +176,7 @@ export function decode_header(
     }
 
     return [
-        result[0] as MainTypes,
+        result[0] as MT,
         result[1] as ST_CC|ST.NONE,
         result[2] as Version,
         result[3],
@@ -236,20 +236,20 @@ export function decode_varnibble(b: string): [number, string] {
 }
 
 export function encode_component(
-    mtype: MainTypes,
+    mtype: MT,
     stype: ST_CC | ST_ISCC.NONE | ST_ISCC.SUM | ST.NONE,
     version: Version,
     bit_length: number,
     digest: string
 ): string {
     if (
-        mtype == MainTypes.META ||
-        mtype == MainTypes.SEMANTIC ||
-        mtype == MainTypes.CONTENT ||
-        mtype == MainTypes.DATA ||
-        mtype == MainTypes.INSTANCE ||
-        mtype == MainTypes.ID ||
-        mtype == MainTypes.FLAKE
+        mtype == MT.META ||
+        mtype == MT.SEMANTIC ||
+        mtype == MT.CONTENT ||
+        mtype == MT.DATA ||
+        mtype == MT.INSTANCE ||
+        mtype == MT.ID ||
+        mtype == MT.FLAKE
     ) {
         const encoded_length: number = encode_length(mtype, bit_length);
         const nbytes = Math.floor(bit_length / 8);
@@ -257,7 +257,7 @@ export function encode_component(
         const body = digest.substring(0, nbytes * 2);
         const component_code = encode_base32(header + body);
         return component_code;
-    } else if (mtype == MainTypes.ISCC) {
+    } else if (mtype == MT.ISCC) {
         throw Error('{mtype} ISCC is not a unit');
     } else {
         throw Error('Illegal MainType');
@@ -510,7 +510,7 @@ export function iscc_decompose(isccCode: string): string[] {
         );
 
         // standard ISCC-UNIT with tail continuation
-        if (mt !== MainTypes.ISCC) {
+        if (mt !== MT.ISCC) {
             const lnBits = decode_length(mt, ln);
             const bytesCount = Math.floor(lnBits / 8);
             const code = encode_component(
@@ -531,7 +531,7 @@ export function iscc_decompose(isccCode: string): string[] {
         // rebuild dynamic units (META, SEMANTIC, CONTENT)
         for (let idx = 0; idx < mainTypes.length; idx++) {
             const mtype = mainTypes[idx];
-            const stype = mtype === MainTypes.META ? ST_ISCC.NONE : st;
+            const stype = mtype === MT.META ? ST_ISCC.NONE : st;
             const code = encode_component(
                 mtype,
                 stype,
@@ -544,14 +544,14 @@ export function iscc_decompose(isccCode: string): string[] {
 
         // rebuild static units (DATA, INSTANCE)
         const dataCode = encode_component(
-            MainTypes.DATA,
+            MT.DATA,
             ST_ISCC.NONE,
             vs,
             64,
             Buffer.from(body.slice(-16, -8)).toString('hex')
         );
         const instanceCode = encode_component(
-            MainTypes.INSTANCE,
+            MT.INSTANCE,
             ST_ISCC.NONE,
             vs,
             64,
@@ -572,7 +572,7 @@ export function iscc_decompose(isccCode: string): string[] {
  */
 export function iscc_decode(
     iscc: string
-): [MainTypes, ST_CC|ST.NONE, Version, number, Uint8Array] {
+): [MT, ST_CC|ST.NONE, Version, number, Uint8Array] {
     const cleaned = iscc_clean(iscc_normalize(iscc));
     const data = decode_base32(cleaned);
     return decode_header(Buffer.from(data).toString('hex'));
@@ -588,7 +588,7 @@ export function iscc_explain(iscc: string): string {
     const tid = iscc_type_id(iscc);
     const [mt, st, ver, len, data] = iscc_decode(iscc);
 
-    if (mt === MainTypes.ID) {
+    if (mt === MT.ID) {
         const counterBytes = data.slice(8);
         if (counterBytes.length > 0) {
             const counter = decode_uvarint(counterBytes);
@@ -611,13 +611,13 @@ export function iscc_explain(iscc: string): string {
  */
 export function iscc_type_id(iscc: string): string {
     const [mt, st, ver, len, _] = iscc_decode(iscc);
-    const mtype = MainTypes[mt];
+    const mtype = MT[mt];
     const stype = SUBTYPE_MAP[mt][st];
 
     let length: string | number;
-    if (mt === MainTypes.ISCC) {
+    if (mt === MT.ISCC) {
         const mtypes = decode_units(len);
-        length = mtypes.map((t) => MainTypes[t][0]).join('') + 'DI';
+        length = mtypes.map((t) => MT[t][0]).join('') + 'DI';
     } else {
         length = decode_length(mt, len);
     }
@@ -634,7 +634,7 @@ export function iscc_type_id(iscc: string): string {
  * @param units - Array of MainTypes combination (can be empty)
  * @returns Integer value to be used as length-value for header encoding
  */
-export function encode_units(units: MainTypes[]): number {
+export function encode_units(units: MT[]): number {
     // Sort units to ensure consistent ordering
     const sortedUnits = [...units].sort((a, b) => a - b);
     return UNITS.findIndex(
@@ -652,7 +652,7 @@ export function encode_units(units: MainTypes[]): number {
  * @returns Array of MainTypes in sorted order
  * @throws Error if unit_id is invalid
  */
-export function decode_units(unit_id: number): MainTypes[] {
+export function decode_units(unit_id: number): MT[] {
     if (unit_id < 0 || unit_id >= UNITS.length) {
         throw new Error(`Invalid unit_id: ${unit_id}`);
     }

@@ -2,7 +2,7 @@
 import { encode_component, decode_base32, decode_header, decode_length ,iscc_clean} from './codec';
 
 import {
-    MainTypes,
+    MT,
     ST_CC,
     MIXED_BITS,
     Version
@@ -33,7 +33,7 @@ export function gen_mixed_code_v0(
     
     const digest = soft_hash_codes_v0(digests, bits);
     const mixed_code = encode_component(
-        MainTypes.CONTENT,
+        MT.CONTENT,
         ST_CC.MIXED,
         Version.V0,
         bits ? bits : 64,
@@ -75,7 +75,7 @@ export function soft_hash_codes_v0(
     ));
 
     // Verify all codes are of type CONTENT
-    if (!code_tuples.every(ct => ct[0] === MainTypes.CONTENT)) {
+    if (!code_tuples.every(ct => ct[0] === MT.CONTENT)) {
         throw new Error(
             'Only codes with main-type CONTENT allowed as input for Content-Code-Mixed'
         );

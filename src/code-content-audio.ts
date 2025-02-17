@@ -1,7 +1,7 @@
 
 import { encode_component } from './codec';
 import {
-    MainTypes,
+    MT,
     ST_CC,
     Version
 } from './constants';
@@ -52,7 +52,7 @@ export function gen_audio_code_v0(
 
     const digest = Buffer.from(soft_hash_audio_v0(chromaprint,bits ? bits : 64)).toString('hex');
     const audio_code = encode_component(
-        MainTypes.CONTENT,
+        MT.CONTENT,
         ST_CC.AUDIO,
         Version.V0,
         bits ? bits : 64,

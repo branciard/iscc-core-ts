@@ -22,7 +22,7 @@ import {
     META_NGRAM_SIZE_BYTES,
     META_NGRAM_SIZE_TEXT,
     META_TRIM_NAME,
-    MainTypes,
+    MT,
     Version,
     IMetaCodeResult,
     ST
@@ -133,7 +133,7 @@ export async function gen_meta_code_v0(
     }
 
     const meta_code = encode_component(
-        MainTypes.META,
+        MT.META,
         ST.NONE,
         Version.V0,
         bits ? bits : METACODE_BITS,
