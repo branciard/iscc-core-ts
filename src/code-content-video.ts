@@ -7,6 +7,7 @@ import {
     ST_CC,
     Version
 } from './constants';
+import { safeHex } from './utils';
 
 /**
  * 
@@ -309,8 +310,7 @@ export function gen_video_code_v0(frameSigs: FrameSig[], bits: number = 64): { i
         ST_CC.VIDEO,
         Version.V0,
         bits ? bits : 64,
-        // fix bug https://github.com/nodejs/node/issues/21242 https://github.com/merkletreejs/merkletreejs/pull/91
-        digest.length % 2 ? '0' + digest : digest
+        safeHex(digest)
     );
 
     const iscc = 'ISCC:' + video_code;

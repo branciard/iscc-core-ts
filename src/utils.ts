@@ -117,3 +117,15 @@ export function rtrim(x: string, characters: string) {
     }
     return x.substring(0, end + 1);
 }
+
+/**
+ * Safely converts a value to an even-length hex string
+ * Ensures the output is a valid hex string with even length
+ * fix bug https://github.com/nodejs/node/issues/21242 https://github.com/merkletreejs/merkletreejs/pull/91
+ * @param value - Value to convert (bigint or hex string)
+ * @returns Safe hex string representation
+ */
+export function safeHex(value: bigint | string): string {
+    const hex = typeof value === 'bigint' ? value.toString(16) : value;
+    return hex.length % 2 ? '0' + hex : hex;
+}

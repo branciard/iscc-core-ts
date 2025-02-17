@@ -1,4 +1,4 @@
-import { hexBytesToBinary } from './utils';
+import { hexBytesToBinary, safeHex } from './utils';
 
 export function alg_simhash(hash_digests: string[]) {
     const n_bytes: number = Buffer.from(hash_digests[0], 'hex').length;
@@ -23,6 +23,5 @@ export function alg_simhash(hash_digests: string[]) {
         }
     }
 
-    const result = shash.toString(16);
-    return result.length % 2 ? '0' + result : result;
+    return safeHex(shash);
 }

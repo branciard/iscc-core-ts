@@ -5,6 +5,7 @@ import {
     ST_CC,
     Version
 } from './constants';
+import { safeHex } from './utils';
 
 /**
  * 
@@ -55,8 +56,7 @@ export function gen_audio_code_v0(
         ST_CC.AUDIO,
         Version.V0,
         bits ? bits : 64,
-        // fix bug https://github.com/nodejs/node/issues/21242 https://github.com/merkletreejs/merkletreejs/pull/91
-        digest.length % 2 ? '0' + digest : digest
+        safeHex(digest)
     );
 
     const iscc = 'ISCC:' + audio_code;

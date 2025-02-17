@@ -1,7 +1,7 @@
 
 import { TEXT_NGRAM_SIZE } from './constants';
 import { text_collapse } from './content-normalization';
-import { sliding_window } from './utils';
+import { safeHex, sliding_window } from './utils';
 import { algMinhash256 } from './minhash';
 import { xxHash32 } from 'js-xxhash';
 import { encode_component } from './codec';
@@ -56,8 +56,7 @@ characters: number;
         ST_CC.TEXT,
         Version.V0,
         bits ? bits : TEXT_BITS,
-        // fix bug https://github.com/nodejs/node/issues/21242 https://github.com/merkletreejs/merkletreejs/pull/91
-        digest.length % 2 ? '0' + digest : digest
+        safeHex(digest)
     );
 
     const iscc = 'ISCC:' + text_code;

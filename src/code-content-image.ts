@@ -5,6 +5,7 @@ import {
     IMAGE_BITS,
     Version
 } from './constants';
+import { safeHex } from './utils';
 
 
 export function gen_image_code(
@@ -45,8 +46,7 @@ export function gen_image_code_v0(
         ST_CC.IMAGE,
         Version.V0,
         bits ? bits : IMAGE_BITS,
-        // fix bug https://github.com/nodejs/node/issues/21242 https://github.com/merkletreejs/merkletreejs/pull/91
-        digest.length % 2 ? '0' + digest : digest
+        safeHex(digest)
     );
 
     const iscc = 'ISCC:' + image_code;
