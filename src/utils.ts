@@ -56,28 +56,18 @@ export function toHexString(bytes: any) {
         .join('');
 }
 
-// Encoding UTF-8 ⇢ base64
-
-export function b64EncodeUnicode(str: string) {
-    return btoa(
-        encodeURIComponent(str).replace(
-            /%([0-9A-F]{2})/g,
-            function (match, p1) {
-                return String.fromCharCode(parseInt(p1, 16));
-            }
-        )
-    );
+/**
+ * Encode UTF-8 string to base64
+ */
+export function b64EncodeUnicode(str: string): string {
+    return Buffer.from(str, 'utf8').toString('base64url');
 }
 
-// Decoding base64 ⇢ UTF-8
-export function b64DecodeUnicode(str: string) {
-    return decodeURIComponent(
-        Array.prototype.map
-            .call(atob(str), function (c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join('')
-    );
+/**
+ * Decode base64 to UTF-8 string
+ */
+export function b64DecodeUnicode(str: string): string {
+    return Buffer.from(str, 'base64url').toString('utf8');
 }
 
 export function binaryArrayToUint8Array(binArray: string): Uint8Array {
