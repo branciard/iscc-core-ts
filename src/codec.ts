@@ -432,7 +432,7 @@ export function iscc_validate(iscc: string, strict = true): boolean {
     const cleaned = iscc_clean(iscc);
 
     // Prefix test
-    const prefix = cleaned.slice(0, 2) as "AA" | "CA" | "CE" | "CI" | "CM" | "CQ" | "EA" | "EE" | "EI" | "EM" | "EQ" | "GA" | "IA" | "KA" | "KE" | "KI" | "KM" | "KQ" | "KU" | "KY" | "MA" | "ME" | "MI" | "MM" | "OA";
+    const prefix = cleaned.slice(0, 2) as any;
     if (!PREFIXES.includes(prefix)) {
         if (strict) {
             throw new Error(`Header starts with invalid sequence ${prefix}`);
