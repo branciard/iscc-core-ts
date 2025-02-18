@@ -362,61 +362,48 @@ export function iscc_clean(iscc: string): string {
     }
 }
 
+
 /**
  * Normalize an ISCC to its canonical form.
- *
+ * 
  * The canonical form of an ISCC is its shortest base32 encoded representation
  * prefixed with the string `ISCC:`.
- *
+ * 
  * Possible valid inputs:
  *     MEACB7X7777574L6
  *     ISCC:MEACB7X7777574L6
  *     fcc010001657fe7cafe9791bb
  *     iscc:maagztfqttvizpjr
  *     Iscc:Maagztfqttvizpjr
- *
- * @param isccCode - Any valid ISCC string
+ * 
+ * A concatenated sequence of codes will be composed into a single ISCC of MainType
+ * `MT.ISCC` if possible.
+ * 
+ * Example:
+ *     iscc_normalize("GAAW2PRCRS5LNVZV-IAAUVACQKXE3V44W")
+ *     returns 'ISCC:KUAG2PRCRS5LNVZVJKAFAVOJXLZZM'
+ * 
+ * @param iscc_code Any valid ISCC string
  * @returns Normalized ISCC string
  */
-export function iscc_normalize(isccCode: string): string {
-    const decoders: Record<string, (input: string) => Uint8Array> = {
-        [MULTIBASE.base16]: (input: string) => Buffer.from(input, 'hex'),
-        [MULTIBASE.base32]: decode_base32,
-        [MULTIBASE.base32hex]: decode_base32hex,
-        [MULTIBASE.base58btc]: decode_base58,
-        [MULTIBASE.base64url]: decode_base64
-    };
+export function iscc_normalize(iscc_code: string): string {
+    // Handle multiformat encoding first
+    iscc_code = normalize_multiformat(iscc_code);
 
-    // Transcode to base32 if <multibase><multicodec> encoded
-    const multibasePrefix = isccCode[0];
-    if (Object.keys(decoders).includes(multibasePrefix)) {
-        const decoder = decoders[multibasePrefix];
-        const decoded = decoder(isccCode.slice(1));
-
-        if (!Buffer.from(decoded.slice(0, 2)).equals(MC_PREFIX_BUFFER)) {
-            throw new Error(
-                `Malformed multiformat codec: ${decoded.slice(0, 2)}`
-            );
-        }
-        isccCode = encode_base32(Buffer.from(decoded.slice(2)).toString('hex'));
-    } else {
-        const prefix = isccCode
-            .toUpperCase()
-            .replace('ISCC:', '')
-            .slice(0, 2) as (typeof PREFIXES)[number];
-        if (!PREFIXES.includes(prefix)) {
-            throw new Error(`ISCC starts with invalid prefix ${prefix}`);
-        }
+    // Validate prefix
+    const prefix = iscc_code.toUpperCase().slice(0, 2);
+    if (!PREFIXES.includes(prefix as any)) {
+        throw new Error(`ISCC starts with invalid prefix ${prefix}`);
     }
 
-    const decomposed = iscc_decompose(isccCode);
-    const recomposed =
-        decomposed.length >= 2
-            ? gen_iscc_code_v0(decomposed).iscc
-            : decomposed[0];
+    const decomposed = iscc_decompose(iscc_code);
+    const recomposed = decomposed.length >= 2 
+        ? gen_iscc_code_v0(decomposed).iscc 
+        : decomposed[0];
 
     return recomposed.startsWith('ISCC:') ? recomposed : `ISCC:${recomposed}`;
 }
+
 
 /**
  * Validate that a given string is a *strictly well-formed* ISCC.
@@ -431,21 +418,31 @@ export function iscc_normalize(isccCode: string): string {
  * @param strict - Throw an error if validation fails (default true)
  * @returns True if string is valid else false (throws Error in strict mode)
  */
-export function iscc_validate(iscc: string, { strict = true } = {}): boolean {
+export function iscc_validate(iscc: string, strict = true): boolean {
     // Basic regex validation
     const match = CANONICAL_REGEX.test(iscc);
     if (!match) {
         if (strict) {
-            throw new Error(
-                'ISCC string does not match ^ISCC:[A-Z2-7]{10,68}$'
-            );
+            throw new Error("ISCC string does not match ^ISCC:[A-Z2-7]{10,68}$");
+        }
+        return false;
+    }
+
+
+    const cleaned = iscc_clean(iscc);
+
+    // Prefix test
+    const prefix = cleaned.slice(0, 2) as "AA" | "CA" | "CE" | "CI" | "CM" | "CQ" | "EA" | "EE" | "EI" | "EM" | "EQ" | "GA" | "IA" | "KA" | "KE" | "KI" | "KM" | "KQ" | "KU" | "KY" | "MA" | "ME" | "MI" | "MM" | "OA";
+    if (!PREFIXES.includes(prefix)) {
+        if (strict) {
+            throw new Error(`Header starts with invalid sequence ${prefix}`);
         }
         return false;
     }
 
     // Base32 encoding test
     try {
-        decode_base32(iscc.split(':')[1]);
+         decode_base32(iscc.split(":")[1]);
     } catch (e) {
         if (strict) {
             throw new Error(e instanceof Error ? e.message : String(e));
@@ -453,21 +450,8 @@ export function iscc_validate(iscc: string, { strict = true } = {}): boolean {
         return false;
     }
 
-    const cleaned = iscc_clean(iscc);
-
-    // Prefix test
-    const prefix = cleaned.slice(0, 2);
-    if (!PREFIXES.includes(prefix as any)) {
-        if (strict) {
-            throw new Error(`Header starts with invalid sequence ${prefix}`);
-        }
-        return false;
-    }
-
+    const [m, s, v, l, t] = decode_header(Buffer.from(decode_base32(cleaned)).toString('hex'));
     // Version test
-    const [m, s, v, l, t] = decode_header(
-        Buffer.from(decode_base32(cleaned)).toString('hex')
-    );
     if (v !== 0) {
         if (strict) {
             throw new Error(`Unknown version ${v} in version header`);
@@ -476,18 +460,36 @@ export function iscc_validate(iscc: string, { strict = true } = {}): boolean {
     }
 
     // Length test
-    const expectedNBytes = decode_length(m, l) / 8;
-    const actualNBytes = t.length;
-    if (expectedNBytes !== actualNBytes) {
+    const expected_nbytes = Math.floor(decode_length(m, l) / 8);
+    const actual_nbytes = t.length;
+    if (expected_nbytes !== actual_nbytes) {
         if (strict) {
-            throw new Error(
-                `Header expects ${expectedNBytes} but got ${actualNBytes} bytes`
-            );
+            throw new Error(`Header expects ${expected_nbytes} but got ${actual_nbytes} bytes`);
         }
         return false;
     }
 
+
     return true;
+}
+
+/**
+ * Validate that a given string is a well-formed ISCC in any supported encoding format.
+ *
+ * @param iscc - ISCC string in any supported encoding
+ * @param strict - Throw an error if validation fails (default true)
+ * @returns True if string is valid else false (throws Error in strict mode)
+ */
+export function iscc_validate_mf(iscc: string, strict = true): boolean {
+    try {
+        const normalized = normalize_multiformat(iscc);
+        return iscc_validate(`ISCC:${normalized}`, strict);
+    } catch (e) {
+        if (strict) {
+            throw e;
+        }
+        return false;
+    }
 }
 
 /**
@@ -495,43 +497,43 @@ export function iscc_validate(iscc: string, { strict = true } = {}): boolean {
  *
  * A valid ISCC sequence is a string concatenation of ISCC-UNITS optionally separated
  * by a hyphen.
- *
- * @param isccCode - ISCC string to decompose
+ * 
+ * @param iscc_code - ISCC string to decompose
  * @returns Array of ISCC-UNIT strings
  */
-export function iscc_decompose(isccCode: string): string[] {
-    const cleaned = iscc_clean(isccCode);
+export function iscc_decompose(iscc_code: string): string[] {
+    // Handle multiformat encoding first
+    iscc_code = normalize_multiformat(iscc_code);
+
     const components: string[] = [];
-
-    let rawCode = decode_base32(cleaned);
-    while (rawCode.length > 0) {
-        const [mt, st, vs, ln, body] = decode_header(
-            Buffer.from(rawCode).toString('hex')
-        );
-
+    let raw_code = decode_base32(iscc_code);
+    
+    while (raw_code.length > 0) {
+        const [mt, st, vs, ln, body] = decode_header(Buffer.from(raw_code).toString('hex'));
+        
         // standard ISCC-UNIT with tail continuation
         if (mt !== MT.ISCC) {
-            const lnBits = decode_length(mt, ln);
-            const bytesCount = Math.floor(lnBits / 8);
+            const ln_bits = decode_length(mt, ln);
+            const bytesCount = Math.floor(ln_bits / 8);
             const code = encode_component(
                 mt,
                 st,
                 vs,
-                lnBits,
+                ln_bits,
                 Buffer.from(body.slice(0, bytesCount)).toString('hex')
             );
             components.push(code);
-            rawCode = body.slice(bytesCount);
+            raw_code = body.slice(bytesCount);
             continue;
         }
 
         // ISCC-CODE
-        const mainTypes = decode_units(ln);
+        const main_types = decode_units(ln);
 
         // rebuild dynamic units (META, SEMANTIC, CONTENT)
-        for (let idx = 0; idx < mainTypes.length; idx++) {
-            const mtype = mainTypes[idx];
-            const stype = mtype === MT.META ? ST_ISCC.NONE : st;
+        for (let idx = 0; idx < main_types.length; idx++) {
+            const mtype = main_types[idx];
+            const stype = mtype === MT.META ? ST.NONE : st;
             const code = encode_component(
                 mtype,
                 stype,
@@ -543,21 +545,21 @@ export function iscc_decompose(isccCode: string): string[] {
         }
 
         // rebuild static units (DATA, INSTANCE)
-        const dataCode = encode_component(
+        const data_code = encode_component(
             MT.DATA,
-            ST_ISCC.NONE,
+            ST.NONE,
             vs,
             64,
             Buffer.from(body.slice(-16, -8)).toString('hex')
         );
-        const instanceCode = encode_component(
+        const instance_code = encode_component(
             MT.INSTANCE,
-            ST_ISCC.NONE,
+            ST.NONE,
             vs,
             64,
             Buffer.from(body.slice(-8)).toString('hex')
         );
-        components.push(dataCode, instanceCode);
+        components.push(data_code, instance_code);
         break;
     }
 
@@ -696,3 +698,33 @@ function decode_uvarint(bytes: Uint8Array): number {
 
     throw new Error('truncated varint');
 }
+
+/**
+ * Normalize a multiformat encoded ISCC to standard base32 encoding.
+ * Returns the input unchanged (but cleaned) if it's not multiformat encoded.
+ */
+export function normalize_multiformat(iscc_code: string): string {
+    const decoders: Record<string, (input: string) => Uint8Array> = {
+        [MULTIBASE.base16]: (input: string) => Buffer.from(input, 'hex'),
+        [MULTIBASE.base32]: decode_base32,
+        [MULTIBASE.base32hex]: decode_base32hex,
+        [MULTIBASE.base58btc]: decode_base58,
+        [MULTIBASE.base64url]: decode_base64
+    };
+
+    // Clean the ISCC code first
+    iscc_code = iscc_clean(iscc_code);
+
+    // Check for multibase prefix
+    const multibase_prefix = iscc_code[0];
+    if (Object.keys(decoders).includes(multibase_prefix)) {
+        const decoder = decoders[multibase_prefix];
+        const decoded = decoder(iscc_code.slice(1));
+        if (!Buffer.from(decoded.slice(0, 2)).equals(MC_PREFIX_BUFFER)) {
+            throw new Error(`Malformed multiformat codec: ${Buffer.from(decoded.slice(0, 2)).toString('hex')}`);
+        }
+        return encode_base32(Buffer.from(decoded.slice(2)).toString('hex'));
+    }
+    return iscc_code;
+}
+

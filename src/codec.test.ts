@@ -1,4 +1,4 @@
-import { decode_base32, decode_base32hex, decode_base64, decode_header, decode_length, decode_varnibble, encode_base32, encode_base32hex, encode_base64, encode_header, encode_varnibble, iscc_clean, iscc_decode, iscc_explain, iscc_type_id, iscc_validate, toHexString, encode_base58, decode_base58 } from "./codec";
+import { decode_base32, decode_base32hex, decode_base64, decode_header, decode_length, decode_varnibble, encode_base32, encode_base32hex, encode_base64, encode_header, encode_varnibble, iscc_clean, iscc_decode, iscc_explain, iscc_type_id, iscc_validate, toHexString, encode_base58, decode_base58, iscc_validate_mf } from "./codec";
 import { MT } from "./constants";
 import { gen_meta_code } from "./metacode";
 
@@ -214,29 +214,29 @@ test('codec_validate_regex', async () => {
     const valid = (await gen_meta_code("Hello World", "32")).iscc;
     expect(iscc_validate(valid)).toBe(true);
     const invalid = valid.slice(0, -1);
-    expect(iscc_validate(invalid, { strict: false })).toBe(false);
+    expect(iscc_validate(invalid,  false )).toBe(false);
     expect(() => {
-        iscc_validate(invalid, { strict: true });
+        iscc_validate(invalid, true );
     }).toThrow();
 });
 
 test('codec_validate_header_prefix', async () => {
     const valid = (await gen_meta_code("Hello World", "32")).iscc;
     const invalid = "ISCC:AE" + valid.slice(7);
-    expect(iscc_validate(invalid, { strict: false })).toBe(false);
+    expect(iscc_validate(invalid,  false )).toBe(false);
     expect(() => {
-        iscc_validate(invalid, { strict: true });
+        iscc_validate(invalid,true );
     }).toThrow();
 });
 
 test('codec_validate_iscc_id', () => {
-    expect(iscc_validate("ISCC:MMAMRVPW22XVU4FR", { strict: false })).toBe(true);
+    expect(iscc_validate("ISCC:MMAMRVPW22XVU4FR",  false )).toBe(true);
 });
 
 test('codec_validate_wrong_version', () => {
-    expect(iscc_validate("ISCC:CE22222222", { strict: false })).toBe(false);
+    expect(iscc_validate("ISCC:CE22222222",  false )).toBe(false);
     expect(() => {
-        iscc_validate("ISCC:CE22222222", { strict: true });
+        iscc_validate("ISCC:CE22222222",  true );
     }).toThrow();
 });
 
@@ -296,3 +296,61 @@ test('test_base58_roundtrip', () => {
     expect(decoded).toEqual(testData);
 });
 
+test('test_iscc_validate_bad_length', () => {
+    const sample = "ISCC:KACT4EBWK27737D2AYCJRAL5Z36G76RFRMO4554RU26HZ";
+    
+    // Non-strict mode should return false
+    expect(iscc_validate(sample, false)).toBe(false);
+    
+    // Strict mode should throw error
+    expect(() => {
+        iscc_validate(sample, true);
+    }).toThrow();
+});
+
+test('test_iscc_validate_mf_valid', () => {
+    const VALID_CANONICAL = "ISCC:EAAWFH3PX3MCYB6N";
+    const VALID_MF_B32H = "vpg0i00b2jtnrtm1c0v6g";
+    const VALID_MF_B32H_P = "iscc:vpg0i00b2jtnrtm1c0v6g";
+
+    // Non-strict mode tests
+    expect(iscc_validate_mf(VALID_CANONICAL, false)).toBe(true);
+    expect(iscc_validate_mf(VALID_MF_B32H, false)).toBe(true);
+    expect(iscc_validate_mf(VALID_MF_B32H_P, false)).toBe(true);
+
+    // Strict mode tests
+    expect(iscc_validate_mf(VALID_CANONICAL, true)).toBe(true);
+    expect(iscc_validate_mf(VALID_MF_B32H, true)).toBe(true);
+    expect(iscc_validate_mf(VALID_MF_B32H_P, true)).toBe(true);
+});
+
+
+test('test_iscc_validate_mf_invalid', () => {
+    const sample = "ISCC:KACT4EBWK27737D2AYCJRAL5Z36G76RFRMO4554RU26HZ";
+    
+    // Non-strict mode should return false
+    expect(iscc_validate_mf(sample, false)).toBe(false);
+    
+    // Strict mode should throw error
+    expect(() => {
+        iscc_validate_mf(sample, true);
+    }).toThrow();
+
+    // Test invalid base32hex
+    const INVALID_MF_B32H = "vpg0i00b2jtnrtm1c0v6";
+    expect(iscc_validate_mf(INVALID_MF_B32H, false)).toBe(false);
+});
+
+
+test('iscc_validate_mscdi', () => {
+    const sample = "ISCC:KEDRRHYRYJ7XELW7HAO5FFGQRX75HJUKSUSZVWTTRNHTF2YL5SKP7XIUFXM4KMKXEZZA";
+    
+    // Valid ISCC should pass in both modes
+    expect(iscc_validate(sample, false)).toBe(true);
+    expect(iscc_validate(sample, true)).toBe(true);
+    
+    // Invalid length should throw in strict mode
+    expect(() => {
+        iscc_validate(sample + "A", true);
+    }).toThrow("ISCC string does not match ^ISCC:[A-Z2-7]{10,68}$");
+});
