@@ -1,5 +1,8 @@
 # iscc-core-ts
-Iscc core TypeScript implementation of [iscc-core python reference](https://github.com/iscc/iscc-core)
+
+[![Jest Tests on Tag](https://github.com/iscc/iscc-core-ts/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/iscc/iscc-core-ts/actions/workflows/npm-publish.yml)
+
+TypeScript implementation of [iscc-core python reference](https://github.com/iscc/iscc-core)
 
 # Project summary
 
@@ -14,59 +17,26 @@ ISCCs are generated algorithmically from digital content, just like cryptographi
 
 The component-based structure of the ISCC identifies content at multiple levels of abstraction. Each component is self-describing, modular, and can be used separately or with others to aid in various content identification tasks. The algorithmic design supports content deduplication, database synchronization, indexing, integrity verification, timestamping, versioning, data provenance, similarity clustering, anomaly detection, usage tracking, allocation of royalties, fact-checking and general digital asset management use-cases.
 
-# Work In progress
+## Development Status
 
-This library is under development. It is not ready for production. The current development planning can be check [here](https://github.com/users/branciard/projects/1)
+> **Note**: This library is under active development and not ready for production use.
 
-| Functions  | Implementation  | test coverage
-| ---------- | --------------  | -------- |
-| gen_meta_code_v0   | Done    | &#x2611; test_0001_title_only
-|                    |         | &#x2611; test_0002_title_extra
-|                    |         | &#x2611; test_0003_96_bits
-|                    |         | &#x2611; test_0004_128_bits
-|                    |         | &#x2611; test_0005_160_bits
-|                    |         | &#x2611; test_0006_192_bits
-|                    |         | &#x2611; test_0007_224_bits
-|                    |         | &#x2611; test_0008_256_bits
-|                    |         | &#x2611; test_0009_i18n
-|                    |         | &#x2611; test_0010_normalizeation
-|                    |         | &#x2611; test_0011_trim
-|                    |         | &#x2611; test_0012_trim_i18n
-|                    |         | &#x2611; test_0013_norm_i18n_256
-|                    |         | &#x2611; test_0014_meta_object_json
-|                    |         | &#x2611; test_0015_meta_object_json_ld
-|                    |         | &#x2611; test_0016_meta_data_url
-| gen_text_code_v0   |  Done   | &#x2611; test_0000_empty_str
-|                    |         | &#x2611; test_0001_hello_world
-|                    |         | &#x2611; test_0002_hello_world_256_bits
-|                    |         | &#x2611; test_0003_i18n
-|                    |         | &#x2611; test_0004_more    
-| gen_image_code_v0  |  Done   | &#x2611; test_0000_all_black_64 
-|                    |         | &#x2611; test_0001_all_white_128 
-|                    |         | &#x2611; test_0003_img_256 
-| gen_audio_code_v0  |  Done   | &#x2611; test_0000_empty_64
-|                    |         | &#x2611; test_0001_one_128 
-|                    |         | &#x2611; test_0002_two_256
-|                    |         | &#x2611; test_0003_test_neg_256
-|                    |         | &#x2611; test_0004_cv_256
-| gen_video_code_v0  |  Done   | &#x2611; test_0000_one_zero_frame_64
-|                    |         | &#x2611; test_0001_multiple_frames_128
-|                    |         | &#x2611; test_0003_range_256
-| gen_mixed_code_v0  |  Done   | &#x2611; test_0000_std_64
-|                    |         | &#x2611; test_0001_128_truncated 
-| gen_data_code_v0   |  Done   | &#x2611; test_0000_two_bytes_64
-|                    |         | &#x2611; test_0001_empty_64
-|                    |         | &#x2611; test_0002_zero_128
-|                    |         | &#x2611; test_0003_static_256
-| gen_instance_code_v0   |  Done   | &#x2611; test_0000_empty_64
-|                    |         | &#x2611; test_0001_zero_128
-|                    |         | &#x2611; test_0002_static_256
-| gen_iscc_code_v0   |  Done   | &#x2611; test_0000_standard
-|                    |         | &#x2611; test_0001_no_meta
-|                    |         | &#x2611; test_0002_no_meta_content_256
-|                    |         | &#x2611; test_0003_no_meta_content_128
-|                    |         | &#x2611; test_0004_ordering
+Track development progress at our [project board](https://github.com/users/branciard/projects/1).
 
+
+### Implementation Status
+
+| Function | Status | Test Coverage |
+|----------|--------|---------------|
+| gen_meta_code_v0 | ✓ Done | 16/16 tests |
+| gen_text_code_v0 | ✓ Done | 5/5 tests |
+| gen_image_code_v0 | ✓ Done | 3/3 tests |
+| gen_audio_code_v0 | ✓ Done | 5/5 tests |
+| gen_video_code_v0 | ✓ Done | 3/3 tests |
+| gen_mixed_code_v0 | ✓ Done | 2/2 tests |
+| gen_data_code_v0 | ✓ Done | 4/4 tests |
+| gen_instance_code_v0 | ✓ Done | 3/3 tests |
+| gen_iscc_code_v0 | ✓ Done | 5/5 tests |
 
 
 # Prerequiste
