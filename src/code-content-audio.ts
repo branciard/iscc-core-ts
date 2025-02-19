@@ -1,10 +1,5 @@
-
 import { encode_component } from './codec';
-import {
-    MT,
-    ST_CC,
-    Version
-} from './constants';
+import { MT, ST_CC, Version } from './constants';
 import { safeHex } from './utils';
 
 /**
@@ -17,14 +12,13 @@ command line parameters:
 `$ fpcalc -raw -json -signed -length 0 myaudiofile.mp3`
  */
 
-
 export function gen_audio_code(
     chromaprint: number[],
     bits?: number,
     version?: number
 ): {
-    iscc: string
-}{
+    iscc: string;
+} {
     if (!version) {
         version = 0;
     }
@@ -36,21 +30,21 @@ export function gen_audio_code(
 }
 
 /**
-*
-* @param name
-* @param description
-* @returns
-*/
+ *
+ * @param name
+ * @param description
+ * @returns
+ */
 
 export function gen_audio_code_v0(
     chromaprint: number[],
     bits?: number
 ): {
-    iscc: string
+    iscc: string;
 } {
-
-
-    const digest = Buffer.from(soft_hash_audio_v0(chromaprint,bits ? bits : 64)).toString('hex');
+    const digest = Buffer.from(
+        soft_hash_audio_v0(chromaprint, bits ? bits : 64)
+    ).toString('hex');
     const audio_code = encode_component(
         MT.CONTENT,
         ST_CC.AUDIO,
@@ -65,8 +59,10 @@ export function gen_audio_code_v0(
     };
 }
 
-
-export function soft_hash_audio_v0(cv: Iterable<number>, bits: number = 64): Uint8Array {
+export function soft_hash_audio_v0(
+    cv: Iterable<number>,
+    bits: number = 64
+): Uint8Array {
     /**
      * Create audio similarity hash from a chromaprint vector.
      *
@@ -76,7 +72,7 @@ export function soft_hash_audio_v0(cv: Iterable<number>, bits: number = 64): Uin
      */
 
     // Convert chromaprint vector into list of 4 byte digests
-    const digests = Array.from(cv).map(intFeature => 
+    const digests = Array.from(cv).map((intFeature) =>
         new Uint8Array(new Int32Array([intFeature]).buffer).reverse()
     );
 
@@ -106,7 +102,7 @@ export function soft_hash_audio_v0(cv: Iterable<number>, bits: number = 64): Uin
 
     // Calculate separate simhashes for each third of features (ordered by int value)
     const cvs = Array.from(cv).sort((a, b) => a - b);
-    const sortedDigests = cvs.map(intFeature => 
+    const sortedDigests = cvs.map((intFeature) =>
         new Uint8Array(new Int32Array([intFeature]).buffer).reverse()
     );
     for (const bucket of divide(3, sortedDigests)) {
@@ -140,7 +136,8 @@ function algSimhash(hashDigests: Uint8Array[]): Uint8Array {
         for (let i = 0; i < nBits; i++) {
             const byteIndex = Math.floor(i / 8);
             const bitIndex = i % 8;
-            vector[i] += (digest[byteIndex] & (1 << (7 - bitIndex))) !== 0 ? 1 : 0;
+            vector[i] +=
+                (digest[byteIndex] & (1 << (7 - bitIndex))) !== 0 ? 1 : 0;
         }
     }
 

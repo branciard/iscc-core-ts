@@ -58,7 +58,6 @@ function isCharNewLinesUnicode(s: string) {
  */
 
 export function text_clean(text: string): string {
-  
     text = text.normalize('NFKC');
     let textWithoutCC = '';
     const charsWithCC = Array.from(text);

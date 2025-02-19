@@ -1,20 +1,14 @@
 import { encode_component } from './codec';
-import {
-    MT,
-    ST_CC,
-    IMAGE_BITS,
-    Version
-} from './constants';
+import { MT, ST_CC, IMAGE_BITS, Version } from './constants';
 import { safeHex } from './utils';
-
 
 export function gen_image_code(
     pixels: number[],
     bits?: number,
     version?: number
 ): {
-    iscc: string
-}{
+    iscc: string;
+} {
     if (!version) {
         version = 0;
     }
@@ -26,21 +20,21 @@ export function gen_image_code(
 }
 
 /**
-*
-* @param name
-* @param description
-* @returns
-*/
+ *
+ * @param name
+ * @param description
+ * @returns
+ */
 
 export function gen_image_code_v0(
     pixels: number[],
-   bits?: number
+    bits?: number
 ): {
-    iscc: string
+    iscc: string;
 } {
-
-
-    const digest = Buffer.from(soft_hash_image_v0(pixels,bits ? bits : IMAGE_BITS)).toString('hex');
+    const digest = Buffer.from(
+        soft_hash_image_v0(pixels, bits ? bits : IMAGE_BITS)
+    ).toString('hex');
     const image_code = encode_component(
         MT.CONTENT,
         ST_CC.IMAGE,
@@ -55,67 +49,72 @@ export function gen_image_code_v0(
     };
 }
 
-
-    /**
-     * Calculate image hash from normalized grayscale pixel sequence of length 1024.
-     *
-     * @param pixels - Normalized image pixels
-     * @param bits - Bit-length of image hash (default 64).
-     * @return Similarity preserving Image-Hash digest.
-     */
-export function soft_hash_image_v0(
-    pixels: number[],
-    bits: number
-): Uint8Array {
+/**
+ * Calculate image hash from normalized grayscale pixel sequence of length 1024.
+ *
+ * @param pixels - Normalized image pixels
+ * @param bits - Bit-length of image hash (default 64).
+ * @return Similarity preserving Image-Hash digest.
+ */
+export function soft_hash_image_v0(pixels: number[], bits: number): Uint8Array {
     if (bits > 256) {
-        throw new Error(`${bits} bits exceeds max length 256 for soft_hash_image`);
+        throw new Error(
+            `${bits} bits exceeds max length 256 for soft_hash_image`
+        );
     }
-   
-   // DCT per row
-   const dctRowLists: number[][] = [];
-   for (let i = 0; i < pixels.length; i += 32) {
-       dctRowLists.push(algDct(pixels.slice(i, i + 32)));
-   }
 
-   // DCT per col
-   const dctRowListsT = dctRowLists[0].map((_, colIndex) => dctRowLists.map(row => row[colIndex]));
-   const dctColListsT = dctRowListsT.map(algDct);
+    // DCT per row
+    const dctRowLists: number[][] = [];
+    for (let i = 0; i < pixels.length; i += 32) {
+        dctRowLists.push(algDct(pixels.slice(i, i + 32)));
+    }
 
-   const dctMatrix = dctColListsT[0].map((_, rowIndex) => dctColListsT.map(col => col[rowIndex]));
+    // DCT per col
+    const dctRowListsT = dctRowLists[0].map((_, colIndex) =>
+        dctRowLists.map((row) => row[colIndex])
+    );
+    const dctColListsT = dctRowListsT.map(algDct);
 
-   function flatten(m: number[][], x: number, y: number): number[] {
-       return m.slice(y, y + 8).flatMap(row => row.slice(x, x + 8));
-   }
+    const dctMatrix = dctColListsT[0].map((_, rowIndex) =>
+        dctColListsT.map((col) => col[rowIndex])
+    );
 
-   let bitstring = "";
-   const slices = [[0, 0], [1, 0], [0, 1], [1, 1]];
+    function flatten(m: number[][], x: number, y: number): number[] {
+        return m.slice(y, y + 8).flatMap((row) => row.slice(x, x + 8));
+    }
 
-   for (const [x, y] of slices) {
-       // Extract 8 x 8 slice
-       const flatList = flatten(dctMatrix, x, y);
+    let bitstring = '';
+    const slices = [
+        [0, 0],
+        [1, 0],
+        [0, 1],
+        [1, 1]
+    ];
 
-       // Calculate median
-       const med = median(flatList);
+    for (const [x, y] of slices) {
+        // Extract 8 x 8 slice
+        const flatList = flatten(dctMatrix, x, y);
 
-       // Append 64-bit digest by comparing to median
-       for (const value of flatList) {
-           bitstring += value > med ? "1" : "0";
-       }
-       
-       const bl = bitstring.length;
-       if (bl >= bits) {
-           const hashDigest = new Uint8Array(Math.floor(bl / 8));
-           for (let i = 0; i < bl; i += 8) {
-               hashDigest[i / 8] = parseInt(bitstring.substr(i, 8), 2);
-           }
-           return hashDigest;
-       }
-   }
+        // Calculate median
+        const med = median(flatList);
 
-   throw new Error("Failed to generate hash digest");
+        // Append 64-bit digest by comparing to median
+        for (const value of flatList) {
+            bitstring += value > med ? '1' : '0';
+        }
+
+        const bl = bitstring.length;
+        if (bl >= bits) {
+            const hashDigest = new Uint8Array(Math.floor(bl / 8));
+            for (let i = 0; i < bl; i += 8) {
+                hashDigest[i / 8] = parseInt(bitstring.substr(i, 8), 2);
+            }
+            return hashDigest;
+        }
+    }
+
+    throw new Error('Failed to generate hash digest');
 }
-
-
 
 function median(numbers: number[]): number {
     const sorted = numbers.slice().sort((a, b) => a - b);
@@ -127,8 +126,6 @@ function median(numbers: number[]): number {
 
     return sorted[middle];
 }
-
-
 
 export function algDct(v: number[]): number[] {
     /**
@@ -144,17 +141,23 @@ export function algDct(v: number[]): number[] {
     if (n === 1) {
         return [...v];
     } else if (n === 0 || n % 2 !== 0) {
-        throw new Error("Invalid input length");
+        throw new Error('Invalid input length');
     } else {
         const half = Math.floor(n / 2);
-        const alpha = Array.from({ length: half }, (_, i) => v[i] + v[n - 1 - i]);
-        const beta = Array.from({ length: half }, (_, i) => 
-            (v[i] - v[n - 1 - i]) / (Math.cos((i + 0.5) * Math.PI / n) * 2.0)
+        const alpha = Array.from(
+            { length: half },
+            (_, i) => v[i] + v[n - 1 - i]
         );
-        
+        const beta = Array.from(
+            { length: half },
+            (_, i) =>
+                (v[i] - v[n - 1 - i]) /
+                (Math.cos(((i + 0.5) * Math.PI) / n) * 2.0)
+        );
+
         const alphaTransformed = algDct(alpha);
         const betaTransformed = algDct(beta);
-        
+
         const result: number[] = [];
         for (let i = 0; i < half - 1; i++) {
             result.push(alphaTransformed[i]);
@@ -162,7 +165,7 @@ export function algDct(v: number[]): number[] {
         }
         result.push(alphaTransformed[half - 1]);
         result.push(betaTransformed[half - 1]);
-        
+
         return result;
     }
 }

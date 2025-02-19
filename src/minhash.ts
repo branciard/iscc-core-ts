@@ -62,8 +62,8 @@ export const MPA = [
     1325704236119824319n,
     196979859428570839n,
     1669408735473259699n,
-    781336617016068757n,
-]
+    781336617016068757n
+];
 
 export const MPB = [
     1089606993368836715n,
@@ -129,23 +129,23 @@ export const MPB = [
     1834583747494146901n,
     222012292803592982n,
     901238460725547841n,
-    1501611130776083278n,
-]
+    1501611130776083278n
+];
 
-export const MAXI64 = (1n << 64n) - 1n
-export const MPRIME = (1n << 61n) - 1n
-export const MAXH = (1n << 32n) - 1n
+export const MAXI64 = (1n << 64n) - 1n;
+export const MPRIME = (1n << 61n) - 1n;
+export const MAXH = (1n << 32n) - 1n;
 
 /**
  * Calculates a 64-dimensional minhash integer vector.
- * 
+ *
  * This function implements the MinHash algorithm, which is used for quickly estimating
  * how similar two sets are. It's particularly useful in large-scale data mining tasks.
- * 
+ *
  * @param {bigint[]} features - An array of bigint features to be hashed.
  * @returns {bigint[]} A 64-dimensional minhash vector.
  * @throws {Error} If the features array is empty.
- * 
+ *
  * @description
  * The function works as follows:
  * 1. It checks if the input array is empty and throws an error if so.
@@ -154,7 +154,7 @@ export const MAXH = (1n << 32n) - 1n
  *    - It computes a hash for each feature using the formula ((a * feature + b) & MAXI64) % MPRIME) & MAXH
  *    - It keeps the minimum hash value among all features
  * 4. The minimum hash values form the resulting minhash vector.
- * 
+ *
  * Constants used:
  * - MPA, MPB: Arrays of 64 predefined values for hashing
  * - MAXI64: Maximum 64-bit integer ((1n << 64n) - 1n)
@@ -176,7 +176,7 @@ export function algMinhash(features: bigint[]): bigint[] {
         let min = MAXH;
 
         for (let j = 0; j < len; j++) {
-            const hash = (((a * features[j] + b) & MAXI64) % MPRIME) & MAXH;
+            const hash = ((a * features[j] + b) & MAXI64) % MPRIME & MAXH;
             min = hash < min ? hash : min;
         }
 
@@ -206,7 +206,10 @@ export function algMinhash256(features: bigint[]): Uint8Array {
     return algMinhashCompress(algMinhash(features), 4);
 }
 
-export function algMinhashCompress(mhash: bigint[], lsb: number = 4): Uint8Array {
+export function algMinhashCompress(
+    mhash: bigint[],
+    lsb: number = 4
+): Uint8Array {
     /**
      * Compress minhash vector to byte hash-digest.
      *
@@ -218,7 +221,7 @@ export function algMinhashCompress(mhash: bigint[], lsb: number = 4): Uint8Array
      * @param lsb - Number of the least significant bits to retain
      * @returns 256-bit binary from the least significant bits of the minhash values
      */
-    let bits: string = "";
+    let bits: string = '';
     for (let bitpos = 0; bitpos < lsb; bitpos++) {
         for (const h of mhash) {
             bits += ((h >> BigInt(bitpos)) & 1n).toString();

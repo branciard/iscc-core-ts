@@ -1,4 +1,4 @@
-import { 
+import {
     normalize_multiformat,
     encode_base32,
     encode_base32hex,
@@ -10,9 +10,9 @@ import {
 
 describe('multiformat', () => {
     // Test constants
-    const CANONICAL = "ISCC:EAAWFH3PX3MCYB6N";
-    const MF_B32H = "vpg0i00b2jtnrtm1c0v6g";
-    const MF_B32H_P = "iscc:vpg0i00b2jtnrtm1c0v6g";
+    const CANONICAL = 'ISCC:EAAWFH3PX3MCYB6N';
+    const MF_B32H = 'vpg0i00b2jtnrtm1c0v6g';
+    const MF_B32H_P = 'iscc:vpg0i00b2jtnrtm1c0v6g';
 
     test('test_iscc_clean', () => {
         expect(iscc_clean(MF_B32H)).toBe(MF_B32H);
@@ -22,7 +22,7 @@ describe('multiformat', () => {
     test('iscc_decode', () => {
         const ISCC_OBJ = iscc_decode(CANONICAL);
         const expected = [...ISCC_OBJ.slice(0, 4), ISCC_OBJ[4]];
-        
+
         expect(iscc_decode(MF_B32H)).toEqual(expected);
         expect(iscc_decode(MF_B32H_P)).toEqual(expected);
     });
@@ -50,5 +50,4 @@ def test_iscc_decompose():
     assert ic.iscc_decompose(MF_B32H) == decomposed
     assert ic.iscc_decompose(MF_B32H_P) == decomposed
     */
-
 });

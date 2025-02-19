@@ -10,13 +10,14 @@ export function alg_simhash(hash_digests: string[]) {
         for (let i = 0; i < n_bits; i++) {
             const byteIndex = Math.floor(i / 8);
             const bitIndex = i % 8;
-            vector[i] += (bytes[byteIndex] & (1 << (7 - bitIndex))) !== 0 ? 1 : 0;
+            vector[i] +=
+                (bytes[byteIndex] & (1 << (7 - bitIndex))) !== 0 ? 1 : 0;
         }
     }
 
     const minfeatures = hash_digests.length / 2;
     let shash: bigint = BigInt(0);
-    
+
     for (let i = 0; i < n_bits; i++) {
         if (vector[i] >= minfeatures) {
             shash |= BigInt(1) << BigInt(n_bits - 1 - i);

@@ -7,19 +7,19 @@ import { xxHash32 } from 'js-xxhash';
 export async function gen_data_code(
     stream: Buffer,
     bits: number = 64
-): Promise<{ iscc: string; }> {
+): Promise<{ iscc: string }> {
     return gen_data_code_v0(stream, bits);
 }
 
 export async function gen_data_code_v0(
     stream: Buffer,
     bits: number = 64
-): Promise<{ iscc: string; }> {
+): Promise<{ iscc: string }> {
     const hasher = new DataHasherV0();
     await hasher.push(stream);
-    
+
     const dataCode = hasher.code(bits);
-    const iscc = "ISCC:" + dataCode;
+    const iscc = 'ISCC:' + dataCode;
     return { iscc };
 }
 
@@ -34,8 +34,7 @@ export class DataHasherV0 {
     private chunkSizes: number[] = [];
     private tail: Buffer | null = null;
 
-    constructor() {
-    }
+    constructor() {}
 
     async push(data: Buffer): Promise<void> {
         let localData = data;

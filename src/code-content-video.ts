@@ -1,11 +1,5 @@
-
-
 import { encode_component } from './codec';
-import {
-    MT,
-    ST_CC,
-    Version
-} from './constants';
+import { MT, ST_CC, Version } from './constants';
 import { safeHex } from './utils';
 
 /**
@@ -275,17 +269,16 @@ export const WTA_VIDEO_ID_PERMUTATIONS: [number, number][] = [
     [282, 15],
     [64, 2],
     [63, 14],
-    [28, 351],
+    [28, 351]
 ];
-
 
 export function gen_video_code(
     frame_sigs: FrameSig[],
     bits?: number,
     version?: number
 ): {
-    iscc: string
-}{
+    iscc: string;
+} {
     if (!version) {
         version = 0;
     }
@@ -295,7 +288,10 @@ export function gen_video_code(
         throw new Error('Only ISCC version 0 is supported');
     }
 }
-export function gen_video_code_v0(frameSigs: FrameSig[], bits: number = 64): { iscc: string } {
+export function gen_video_code_v0(
+    frameSigs: FrameSig[],
+    bits: number = 64
+): { iscc: string } {
     /**
      * Create an ISCC Video-Code with algorithm v0.
      *
@@ -303,7 +299,9 @@ export function gen_video_code_v0(frameSigs: FrameSig[], bits: number = 64): { i
      * @param bits - Bit-length resulting Video-Code (multiple of 64)
      * @return ISCC object with Video-Code
      */
-    const digest = Buffer.from(soft_hash_video_v0(frameSigs, bits)).toString('hex');
+    const digest = Buffer.from(soft_hash_video_v0(frameSigs, bits)).toString(
+        'hex'
+    );
     const video_code = encode_component(
         MT.CONTENT,
         ST_CC.VIDEO,
@@ -316,18 +314,21 @@ export function gen_video_code_v0(frameSigs: FrameSig[], bits: number = 64): { i
     return { iscc };
 }
 
-export function soft_hash_video_v0(frameSigs: FrameSig[], bits: number = 64): Uint8Array {
+export function soft_hash_video_v0(
+    frameSigs: FrameSig[],
+    bits: number = 64
+): Uint8Array {
     /**
      * Compute video hash v0 from MP7 frame signatures.
      *
      * @param frameSigs - 2D matrix of MP7 frame signatures
      * @param bits - Bit-length of resulting Video-Code (multiple of 64)
      */
-    const sigs = new Set(frameSigs.map(sig => sig.toString()));
+    const sigs = new Set(frameSigs.map((sig) => sig.toString()));
     const vecsum = Array(frameSigs[0].length).fill(0);
-    sigs.forEach(sigStr => {
+    sigs.forEach((sigStr) => {
         const sig = sigStr.split(',').map(Number);
-        sig.forEach((val, idx) => vecsum[idx] += val);
+        sig.forEach((val, idx) => (vecsum[idx] += val));
     });
     return algWtahash(vecsum, bits);
 }
@@ -342,7 +343,7 @@ function algWtahash(vec: number[], bits: number): Uint8Array {
         h.push(v.indexOf(Math.max(...v)));
         if (h.length === bits) break;
     }
-    
+
     // Convert bit array to byte array
     const byteArray = new Uint8Array(Math.ceil(bits / 8));
     for (let i = 0; i < h.length; i++) {
