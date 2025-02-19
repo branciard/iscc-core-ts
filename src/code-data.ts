@@ -4,6 +4,12 @@ import { algCdcChunks } from './cdc';
 import { algMinhash256 } from './minhash';
 import { xxHash32 } from 'js-xxhash';
 
+/**
+ * Generates an ISCC Data-Code from a data stream
+ * @param stream - Input data buffer
+ * @param bits - Number of bits for the hash (default 64)
+ * @returns Object containing ISCC code
+ */
 export async function gen_data_code(
     stream: Buffer,
     bits: number = 64
@@ -11,6 +17,12 @@ export async function gen_data_code(
     return gen_data_code_v0(stream, bits);
 }
 
+/**
+ * Generates an ISCC Data-Code from a data stream
+ * @param stream - Input data buffer
+ * @param bits - Number of bits for the hash (default 64)
+ * @returns Object containing ISCC code
+ */
 export async function gen_data_code_v0(
     stream: Buffer,
     bits: number = 64

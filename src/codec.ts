@@ -572,10 +572,10 @@ export function iscc_decompose(iscc_code: string): string[] {
 }
 
 /**
- * Decode ISCC to a tuple of [MainType, SubType, Version, length, Uint8Array]
- *
- * @param iscc - ISCC string
- * @returns Tuple of [MainType, SubType, Version, length, TailData]
+ * Decodes an ISCC string into its components
+ * @param iscc - ISCC string to decode
+ * @returns Tuple containing [MainType, SubType, Version, length, TailData]
+ * @throws Error if ISCC string is invalid
  */
 export function iscc_decode(
     iscc: string

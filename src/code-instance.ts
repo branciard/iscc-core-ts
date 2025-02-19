@@ -4,7 +4,10 @@ import { MT, ST, Version } from './constants';
 import { createBLAKE3 } from 'hash-wasm';
 
 /**
- * Generate an ISCC Instance-Code
+ * Generates an ISCC Instance-Code from a data stream
+ * @param stream - Input data buffer
+ * @param bits - Number of bits for the hash (default 64)
+ * @returns Object containing ISCC code, datahash and filesize
  */
 export async function gen_instance_code(
     stream: Buffer,
