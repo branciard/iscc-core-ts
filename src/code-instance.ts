@@ -3,17 +3,31 @@ import { encode_component } from './codec';
 import { MT, ST, Version } from './constants';
 import { createBLAKE3 } from 'hash-wasm';
 
+/**
+ * Generate an ISCC Instance-Code
+ */
 export async function gen_instance_code(
     stream: Buffer,
     bits: number = 64
-): Promise<any> {
+): Promise<{
+    iscc: string;
+    datahash: string | null;
+    filesize: number;
+}> {
     return gen_instance_code_v0(stream, bits);
 }
 
+/**
+ * Generate an ISCC Instance-Code using version 0 algorithm
+ */
 export async function gen_instance_code_v0(
     stream: Buffer,
     bits: number = 64
-): Promise<any> {
+): Promise<{
+    iscc: string;
+    datahash: string | null;
+    filesize: number;
+}> {
     const hasher = await InstanceHasherV0.create();
     await hasher.push(stream);
 

@@ -1,12 +1,4 @@
-import {
-    normalize_multiformat,
-    encode_base32,
-    encode_base32hex,
-    encode_base64,
-    iscc_clean,
-    iscc_decode,
-    iscc_decompose
-} from './codec';
+import { iscc_clean, iscc_decode, iscc_decompose } from './codec';
 
 describe('multiformat', () => {
     // Test constants

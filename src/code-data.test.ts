@@ -134,7 +134,6 @@ describe('code-data', () => {
 
         // 7 random single byte changes
         for (let step = 0; step < 7; step++) {
-            const oldLen = ba.length;
             const pos = rpos();
             const newByte = rbyte();
 

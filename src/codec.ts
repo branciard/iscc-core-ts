@@ -432,8 +432,8 @@ export function iscc_validate(iscc: string, strict = true): boolean {
     const cleaned = iscc_clean(iscc);
 
     // Prefix test
-    const prefix = cleaned.slice(0, 2) as any;
-    if (!PREFIXES.includes(prefix)) {
+    const prefix: string = cleaned.slice(0, 2);
+    if (!PREFIXES.includes(prefix as any)) {
         if (strict) {
             throw new Error(`Header starts with invalid sequence ${prefix}`);
         }
@@ -450,7 +450,7 @@ export function iscc_validate(iscc: string, strict = true): boolean {
         return false;
     }
 
-    const [m, s, v, l, t] = decode_header(
+    const [m, , v, l, t] = decode_header(
         Buffer.from(decode_base32(cleaned)).toString('hex')
     );
     // Version test
@@ -593,7 +593,7 @@ export function iscc_decode(
  */
 export function iscc_explain(iscc: string): string {
     const tid = iscc_type_id(iscc);
-    const [mt, st, ver, len, data] = iscc_decode(iscc);
+    const [mt, , , , data] = iscc_decode(iscc);
 
     if (mt === MT.ID) {
         const counterBytes = data.slice(8);
@@ -617,7 +617,7 @@ export function iscc_explain(iscc: string): string {
  * @returns Unique Type-ID string
  */
 export function iscc_type_id(iscc: string): string {
-    const [mt, st, ver, len, _] = iscc_decode(iscc);
+    const [mt, st, ver, len] = iscc_decode(iscc);
     const mtype = MT[mt];
     const stype = SUBTYPE_MAP[mt][st];
 

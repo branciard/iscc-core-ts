@@ -25,7 +25,6 @@ export async function* algCdcChunks(
     // Create a safe view of the data using Node.js Buffer
     let currentPosition = 0;
     const readSize = IO_READ_SIZE;
-    let i = 0;
     while (currentPosition < data.length) {
         // Calculate how much data we can safely read
         const remainingBytes = data.length - currentPosition;
@@ -36,7 +35,6 @@ export async function* algCdcChunks(
             currentPosition,
             currentPosition + bytesToRead
         );
-        i++;
         // Find the cut point
         let cutPoint = algCdcOffset(
             currentBuffer,

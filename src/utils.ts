@@ -46,16 +46,6 @@ export function isJson(item: string | object) {
     return typeof value === 'object' && value !== null;
 }
 
-// fix https://github.com/nodejs/node/issues/21242
-export function toHexString(bytes: any) {
-    return bytes
-        .map((byte: any) => {
-            if (byte > 15) return (byte & 0xff).toString(16);
-            else return '0' + (byte & 0xff).toString(16);
-        })
-        .join('');
-}
-
 /**
  * Encode UTF-8 string to base64
  */
