@@ -312,6 +312,20 @@ export const PREFIXES = [
     'OA'
 ] as const;
 
+export const LINE_ENDINGS = {
+    LF: '\u000A',      // Line Feed
+    VT: '\u000B',      // Vertical Tab
+    FF: '\u000C',      // Form Feed
+    CR: '\u000D',      // Carriage Return
+    NEL: '\u0085',     // Next Line
+    LS: '\u2028',      // Line Separator
+    PS: '\u2029'       // Paragraph Separator
+} as const;
+
+export const LINE_ENDING_REGEX = new RegExp(
+    Object.values(LINE_ENDINGS).join('|')
+);
+
 /**
  * Type for valid ISCC prefixes
  */

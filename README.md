@@ -53,8 +53,8 @@ Install node 21
 ```sh
 nvm install --lts
 Installing latest LTS version.
-v22.13.1 is already installed.
-Now using node v22.13.1 (npm v10.9.2)
+v22.14.0 is already installed.
+Now using node v22.14.0 (npm v10.9.2)
 
 ```
 
@@ -62,40 +62,22 @@ Now using node v22.13.1 (npm v10.9.2)
 
 ```sh
 npm install -g npm@11.1.0
-npm i
+npm ci
 npm run build
 ```
 
 # Tests
 
 ```sh
-npm run test
-npm run test-isolated
-npm run test-esm
-npm run test-esm-isolated
+npm run fulltest
 ```
 
 Expected tests result :
 
 ```sh
- PASS  src/content-normalization.test.ts
- PASS  src/cdc.test.ts
- PASS  src/code-content-audio.test.ts
- PASS  src/iscc-code.test.ts
- PASS  src/code-content-image.test.ts
- PASS  src/code-content-text.test.ts
- PASS  src/minhash.test.ts
- PASS  src/utils.test.ts
- PASS  src/code-content-video.test.ts
- PASS  src/metacode.test.ts
- PASS  src/codec.test.ts
- PASS  src/code-content-mixed.test.ts
- PASS  src/code-instance.test.ts
- PASS  src/data.test.ts
- PASS  src/code-data.test.ts
 
-Test Suites: 15 passed, 15 total
-Tests:       192 passed, 192 total
+Test Suites: 16 passed, 16 total
+Tests:       201 passed, 201 total
 ```
 
 # Funding

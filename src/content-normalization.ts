@@ -9,6 +9,8 @@
 
 import XRegExp from 'xregexp';
 
+import { LINE_ENDING_REGEX } from './constants';
+
 export function text_trim(text: string, limit?: number): string {
     return text_encodeUTF8(text, limit).trim();
 }
@@ -42,7 +44,7 @@ function isCharControlCategoryUnicode(s: string) {
 }
 
 function isCharNewLinesUnicode(s: string) {
-    const regex = /\u000A|\u000B|\u000C|\u000D|\u0085|\u2028|\u2029/;
+    const regex = LINE_ENDING_REGEX
     if (regex.test(s)) {
         return true;
     } else {
