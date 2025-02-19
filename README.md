@@ -1,6 +1,6 @@
 # iscc-core-ts
 
-[![Jest Tests on Tag](https://github.com/iscc/iscc-core-ts/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/iscc/iscc-core-ts/actions/workflows/npm-publish.yml)
+[![Tests](https://github.com/iscc/iscc-core-ts/actions/workflows/tests.yml/badge.svg)](https://github.com/iscc/iscc-core-ts/actions/workflows/tests.yml)
 
 TypeScript implementation of [iscc-core python reference](https://github.com/iscc/iscc-core)
 

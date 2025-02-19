@@ -1,11 +1,13 @@
 # This workflow will run tests using node when a tag is created
 
-name: Jest Tests on Tag
+name: Tests
 
 on:
   push:
-    tags:
-      - '*'
+    branches: [ main ]
+    tags: [ '*' ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
