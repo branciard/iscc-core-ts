@@ -1,6 +1,6 @@
 # iscc-core-ts
 
-[![Tests](https://github.com/branciard/iscc-core-ts/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/branciard/iscc-core-ts/actions/workflows/tests.yml)us
+[![Tests](https://github.com/branciard/iscc-core-ts/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/branciard/iscc-core-ts/actions/workflows/tests.yml)
 
 TypeScript implementation of [iscc-core python reference](https://github.com/iscc/iscc-core)
 
@@ -26,7 +26,7 @@ Track development progress at our [project board](https://github.com/users/branc
 
 ### Implementation Status
 
-| Function | Status | References Tests Coverage |
+| Function | Status | Reference Coverage |
 |----------|--------|---------------|
 | gen_meta_code_v0 | ✓ Done | 16/16 tests |
 | gen_text_code_v0 | ✓ Done | 5/5 tests |
