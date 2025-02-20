@@ -82,7 +82,10 @@ Tests:       202 passed, 202 total
 
 # Documentation
 
-- TypeDoc documentation of typescript implementation is available [here](./docs/generated/iscc-core-ts/)
+- Generate [Typedoc documentation](./docs/generated/iscc-core-ts/) with command:
+```sh
+npm run make:docs/reference
+```
 - Reference python implementation is available [here](https://github.com/iscc/iscc-core)
 - Reference standard documentation is available [here](https://www.iso.org/fr/standard/77899.html)
 
