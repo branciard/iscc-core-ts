@@ -80,6 +80,12 @@ Test Suites: 16 passed, 16 total
 Tests:       202 passed, 202 total
 ```
 
+# Documentation
+
+- TypeDoc documentation of typescript implementation is available [here](https://branciard.github.io/iscc-core-ts/docs/generated/iscc-core-ts/index.html)
+- Reference python implementation is available [here](https://github.com/iscc/iscc-core)
+- Reference standard documentation is available [here](https://www.iso.org/fr/standard/77899.html)
+
 # Funding
 
 This project is funded through [NGI Zero Core](https://nlnet.nl/core), a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) program. Learn more at the [NLnet project page](https://nlnet.nl/project/ISCC-CORE-ts).
