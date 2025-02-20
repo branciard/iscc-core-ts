@@ -77,7 +77,7 @@ Expected tests result :
 ```sh
 
 Test Suites: 16 passed, 16 total
-Tests:       201 passed, 201 total
+Tests:       202 passed, 202 total
 ```
 
 # Funding

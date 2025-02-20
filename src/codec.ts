@@ -93,12 +93,12 @@ export function decode_length(mtype: MT, length: number): number {
 
 export function encode_header(
     mtype: MT,
-    stype: ST_CC | ST_ISCC.NONE | ST_ISCC.SUM | ST.NONE,
+    stype: ST | ST_CC | ST_ISCC ,
     version: Version,
     length: number
 ): string {
     return toHexString(
-        encode_header_to_uint8Array(mtype, stype, version, length)
+        encode_header_to_uint8Array(mtype, stype as ST_CC | ST_ISCC.SUM | ST_ISCC.NONE | ST.NONE, version, length)
     );
 }
 

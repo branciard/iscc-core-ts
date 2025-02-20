@@ -22,6 +22,7 @@ import {
 } from './codec';
 import { MT } from './constants';
 import { gen_meta_code } from './metacode';
+import { Code } from './model';
 
 test('test_main_type', () => {
     expect(typeof MT.META).toBe('number');
@@ -400,3 +401,10 @@ test('iscc_validate_mscdi', () => {
         iscc_validate(sample + 'A', true);
     }).toThrow('ISCC string does not match ^ISCC:[A-Z2-7]{10,68}$');
 });
+
+test('test_Code_hash_base32hex', () => {
+    const iscc = "KICQOCPJM46YUUCBMWS6FFXRGM3LJOU5MZOVPOUHIJOHPI324GKN67Q";
+    const code = new Code(iscc);
+    expect(code.hashBase32hex).toBe("0S4UIPPTH9842PD5SABF2CPMMIT9QPITAUT8EGISEUHNLOCKRTV0");
+});
+

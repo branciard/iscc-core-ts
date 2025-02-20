@@ -31,9 +31,9 @@ export enum MT {
     DATA = 3,
     INSTANCE = 4,
     ISCC = 5,
-    ID = 6,
-    FLAKE = 7,
-    TESTMainType8 = 8
+    ID = 6, // Not part of standard ISCC-ISO-24138-2024
+    FLAKE = 7, // Not part of standard ISCC-ISO-24138-2024
+    TESTMainType8 = 8 // Not part of standard ISCC-ISO-24138-2024
 }
 
 /**
@@ -111,6 +111,8 @@ export enum ST_ISCC {
 
 /**
  * SubTypes for `MT.ID`
+ * 
+ * Not part of standard ISCC-ISO-24138-2024
  *
  * | Uint | Symbol   | Bits | Purpose                                                 |
  * |----- |:---------|------|---------------------------------------------------------|
@@ -186,15 +188,15 @@ export interface IMetaCodeResult {
 export enum Length {
     L32 = 32,
     L64 = 64,
-    L72 = 72,
-    L80 = 80,
+    // L72 = 72, // not part of standard ISCC-ISO-24138-2024
+    // L80 = 80, // not part of standard ISCC-ISO-24138-2024
     L96 = 96,
     L128 = 128,
     L160 = 160,
     L192 = 192,
     L224 = 224,
-    L256 = 256,
-    L320 = 320
+    L256 = 256
+    // L320 = 320 // not part of standard ISCC-ISO-24138-2024
 }
 
 // Define UNITS as readonly tuples
