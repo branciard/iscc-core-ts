@@ -82,7 +82,7 @@ Tests:       202 passed, 202 total
 
 # Documentation
 
-- Generate [Typedoc documentation](./docs/generated/iscc-core-ts/) with command:
+- Generate Typedoc documentation in./docs/generated/iscc-core-ts/ with command:
 ```sh
 npm run make:docs/reference
 ```
