@@ -9,20 +9,51 @@ import {
 import { MT, ST_ISCC, Version, IsccTuple } from './constants';
 
 /**
- * Combine multiple ISCC-UNITs to a composite ISCC-CODE with a common header using
- * the latest standard algorithm.
- * @param codes - A valid sequence of singular ISCC codes.
- * @returns An ISCC object with ISCC-CODE
+ * Combine multiple ISCC-UNITs to a composite ISCC-CODE with a common header.
+ * 
+ * Creates a composite ISCC code by combining multiple individual ISCC units
+ * using the latest standard algorithm. The composite code maintains relationships
+ * between different aspects of the same content.
+ * 
+ * @param codes - Array of valid singular ISCC codes
+ * @returns Object containing the composite ISCC code
+ * @throws {Error} If input validation fails:
+ *   - Fewer than 2 codes provided
+ *   - Codes shorter than 64 bits
+ *   - Missing required DATA and INSTANCE units
+ *   - Mismatched SubTypes between Semantic and Content codes
+ * 
+ * @example
+ * ```typescript
+ * const codes = [
+ *   "ISCC:KACYPNRYMQKG", // Content Code
+ *   "ISCC:EAAQ5PRYMQKG", // Data Code
+ *   "ISCC:MAAQAPRYMQKG"  // Instance Code
+ * ];
+ * const result = gen_iscc_code(codes);
+ * console.log(result.iscc); // Outputs composite ISCC code
+ * ```
  */
 export function gen_iscc_code(codes: string[]): { iscc: string } {
     return gen_iscc_code_v0(codes);
 }
 
 /**
- * Combine multiple ISCC-UNITS to an ISCC-CODE with a common header using
- * algorithm v0.
- * @param codes - A valid sequence of singular ISCC codes.
- * @returns An ISCC object with ISCC-CODE
+ * Combine multiple ISCC-UNITs to a composite ISCC-CODE using algorithm v0.
+ * 
+ * Implementation of version 0 of the ISCC code generation algorithm.
+ * 
+ * The process:
+ * 1. Cleans and validates input codes
+ * 2. Decodes and sorts units by MainType
+ * 3. Determines appropriate SubType
+ * 4. Concatenates unit digests
+ * 5. Generates composite header
+ * 
+ * @param codes - Array of valid singular ISCC codes
+ * @returns Object containing the composite ISCC code
+ * @throws {Error} If input validation fails
+ * @internal
  */
 export function gen_iscc_code_v0(codes: string[]): { iscc: string } {
     codes = codes.map((code) => iscc_clean(code));
@@ -91,7 +122,16 @@ export function gen_iscc_code_v0(codes: string[]): { iscc: string } {
     return { iscc };
 }
 
-// Verbose version with explicit typing
+/**
+ * Concatenates digest portions of decoded ISCC tuples.
+ * 
+ * Takes an array of decoded ISCC tuples and concatenates their digest portions,
+ * truncating each to 8 bytes to create the composite digest.
+ * 
+ * @param decoded - Array of decoded ISCC tuples
+ * @returns Buffer containing concatenated digests
+ * @internal
+ */
 function concatenateDigests(decoded: IsccTuple[]): Buffer {
     // Pre-allocate buffer for all 8-byte chunks
     const digestLength = decoded.length * 8;

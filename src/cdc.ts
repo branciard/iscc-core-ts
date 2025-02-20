@@ -2,10 +2,24 @@ import { CDC_GEAR_UINT32, IO_READ_SIZE } from './constants';
 
 /**
  * A generator that yields data-dependent chunks for the input data.
- * @param data Raw data for variable sized chunking
- * @param utf32 If true assume we are chunking text that is utf32 encoded
- * @param avgChunkSize Target chunk size in number of bytes
- * @returns An async generator that yields data chunks of variable sizes
+ * 
+ * Implements Content-Defined Chunking (CDC) algorithm to split data into
+ * variable-sized chunks based on content boundaries. This approach provides
+ * better deduplication than fixed-size chunking as it maintains chunk
+ * boundaries even when data is shifted.
+ * 
+ * @param data - Raw data buffer to be chunked
+ * @param utf32 - If true, ensures chunk boundaries align with UTF-32 encoding (4-byte alignment)
+ * @param avgChunkSize - Target average chunk size in bytes (default: 1024)
+ * @returns AsyncGenerator yielding Buffer chunks of variable sizes
+ * 
+ * @example
+ * ```typescript
+ * const data = Buffer.from('some data');
+ * for await (const chunk of algCdcChunks(data)) {
+ *   console.log(chunk.length); // Size of each chunk
+ * }
+ * ```
  */
 export async function* algCdcChunks(
     data: Buffer,
@@ -59,14 +73,21 @@ export async function* algCdcChunks(
 }
 
 /**
- * Find breakpoint offset for a given buffer.
- * @param buffer The data to be chunked
- * @param mi Minimum chunk size
- * @param ma Maximum chunk size
- * @param cs Center size
- * @param maskS Small mask
- * @param maskL Large mask
+ * Find breakpoint offset for a given buffer using the CDC algorithm.
+ * 
+ * Uses a rolling hash function and two different masks to find suitable
+ * chunk boundaries. The algorithm operates in two phases:
+ * 1. First phase uses a stricter mask (maskS) to find boundaries in the preferred range
+ * 2. Second phase uses a more lenient mask (maskL) to ensure chunks don't exceed maximum size
+ * 
+ * @param buffer - The data buffer to be chunked
+ * @param mi - Minimum chunk size
+ * @param ma - Maximum chunk size
+ * @param cs - Center size (target chunk size)
+ * @param maskS - Small mask for first phase (stricter)
+ * @param maskL - Large mask for second phase (more lenient)
  * @returns Offset of dynamic cutpoint in number of bytes
+ * @internal
  */
 export function algCdcOffset(
     buffer: Buffer,
@@ -103,9 +124,18 @@ export function algCdcOffset(
 }
 
 /**
- * Calculate CDC parameters
- * @param avgSize Target average size of chunks in number of bytes.
- * @returns Object containing minSize, maxSize, centerSize, maskS, and maskL
+ * Calculate CDC parameters based on target average chunk size.
+ * 
+ * Computes optimal parameters for the CDC algorithm:
+ * - minSize: Minimum chunk size (1/4 of average)
+ * - maxSize: Maximum chunk size (8x average)
+ * - centerSize: Target size for optimal chunking
+ * - maskS: Strict mask for primary chunking phase
+ * - maskL: Lenient mask for secondary chunking phase
+ * 
+ * @param avgSize - Target average size of chunks in bytes
+ * @returns Object containing calculated CDC parameters
+ * @internal
  */
 export function algCdcParams(avgSize: number): {
     minSize: number;

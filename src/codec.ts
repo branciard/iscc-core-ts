@@ -16,6 +16,12 @@ import {
 } from './constants';
 import { gen_iscc_code_v0 } from './iscc-code';
 
+/**
+ * Converts a Uint8Array to a hexadecimal string.
+ * 
+ * @param bytes - Array of bytes to convert
+ * @returns Hexadecimal string representation
+ */
 export function toHexString(bytes: Uint8Array): string {
     let result = '';
     for (const byte of bytes) {
@@ -28,6 +34,14 @@ export function toHexString(bytes: Uint8Array): string {
     return result;
 }
 
+/**
+ * Encodes the length of an ISCC code based on its main type.
+ * 
+ * @param mtype - Main type of the ISCC code
+ * @param length - Length value to encode
+ * @returns Encoded length value
+ * @throws Error if length is invalid for the given MainType
+ */
 export function encode_length(mtype: MT, length: number): number {
     const error =
         'Invalid length [' + length + '] for MainType [' + mtype + ']';
@@ -62,11 +76,8 @@ export function encode_length(mtype: MT, length: number): number {
 }
 
 /**
- * Decode raw length value from ISCC header to length of digest in number of bits.
- *
- * Decodes a raw header integer value into its semantically meaningful value
- * (e.g. number of bits)
- *
+ * Decodes raw length value from ISCC header to length of digest in bits.
+ * 
  * @param mtype - Main type of the ISCC code
  * @param length - Raw length value from header
  * @returns Number of bits
@@ -91,6 +102,15 @@ export function decode_length(mtype: MT, length: number): number {
     }
 }
 
+/**
+ * Encodes ISCC header components into a hex string.
+ * 
+ * @param mtype - Main type of the ISCC code
+ * @param stype - Subtype of the ISCC code
+ * @param version - Version number
+ * @param length - Length value
+ * @returns Hex string representation of header
+ */
 export function encode_header(
     mtype: MT,
     stype: ST | ST_CC | ST_ISCC ,
@@ -122,11 +142,11 @@ export function encode_header_to_uint8Array(
 
 /**
  * Decodes varnibble encoded header and returns it together with tail data.
- *
+ * 
  * Tail data is included to enable decoding of sequential ISCCs. The returned tail
  * data must be truncated to decode_length(r[0], r[3]) bits to recover the actual
  * hash-bytes.
- *
+ * 
  * @param data - Hex string of ISCC bytes
  * @returns Tuple of [MainType, SubType, Version, length, TailData]
  */
@@ -184,6 +204,14 @@ export function decode_header(
     ];
 }
 
+/**
+ * Encodes a number into a variable-length nibble representation.
+ * 
+ * @param n - Number to encode (0-4679)
+ * @returns Binary string representation
+ * @throws Error if input is not an integer or out of range
+ * @internal
+ */
 export function encode_varnibble(n: number): string {
     if (!Number.isInteger(n)) {
         throw new Error('encode_varnibble - Input must be an integer');
@@ -206,10 +234,12 @@ export function encode_varnibble(n: number): string {
 }
 
 /**
- * Reads first varnibble, returns its integer value and remaining bits.
- * @param b - Array of header bits
- * @returns A tuple of the integer value of first varnibble and the remaining bits
- * @throws Error if the bitarray is invalid
+ * Decodes a variable-length nibble from a binary string.
+ * 
+ * @param b - Binary string to decode
+ * @returns Tuple of [decoded value, remaining bits]
+ * @throws Error if input is invalid
+ * @internal
  */
 export function decode_varnibble(b: string): [number, string] {
     if (!/^[01]+$/.test(b)) {
@@ -235,6 +265,16 @@ export function decode_varnibble(b: string): [number, string] {
     throw new Error('Invalid bitarray');
 }
 
+/**
+ * Encodes an ISCC component from its parts.
+ * 
+ * @param mtype - Main type
+ * @param stype - Subtype
+ * @param version - Version number
+ * @param bit_length - Length in bits
+ * @param digest - Hash digest
+ * @returns Encoded ISCC component
+ */
 export function encode_component(
     mtype: MT,
     stype: ST_CC | ST_ISCC.NONE | ST_ISCC.SUM | ST.NONE,
@@ -331,9 +371,8 @@ export function decode_base64(code: string): Uint8Array {
 }
 
 /**
- * Cleanup ISCC string.
- * Removes leading scheme, dashes, leading/trailing whitespace.
- *
+ * Cleanup ISCC string by removing scheme, dashes, and whitespace.
+ * 
  * @param iscc - Any valid ISCC string
  * @returns Cleaned ISCC string
  * @throws Error if scheme is invalid or ISCC string is malformed
@@ -496,13 +535,10 @@ export function iscc_validate_mf(iscc: string, strict = true): boolean {
 }
 
 /**
- * Decompose a normalized ISCC-CODE or any valid ISCC sequence into a list of ISCC-UNITS.
- *
- * A valid ISCC sequence is a string concatenation of ISCC-UNITS optionally separated
- * by a hyphen.
- *
- * @param iscc_code - ISCC string to decompose
- * @returns Array of ISCC-UNIT strings
+ * Decomposes an ISCC code into its component parts.
+ * 
+ * @param iscc_code - ISCC code to decompose
+ * @returns Array of component strings
  */
 export function iscc_decompose(iscc_code: string): string[] {
     // Handle multiformat encoding first
@@ -635,9 +671,9 @@ export function iscc_type_id(iscc: string): string {
 }
 
 /**
- * Encodes a combination of ISCC units to an integer between 0-7 to be used as length
- * value for the final encoding of MT.ISCC
- *
+ * Encodes a combination of ISCC units to an integer between 0-7.
+ * Used as length value for the final encoding of MT.ISCC.
+ * 
  * @param units - Array of MainTypes combination (can be empty)
  * @returns Integer value to be used as length-value for header encoding
  */
@@ -652,9 +688,8 @@ export function encode_units(units: MT[]): number {
 }
 
 /**
- * Decodes an ISCC header length value that has been encoded with a unit_id to an
- * ordered array of MainTypes.
- *
+ * Decodes an ISCC header length value into an ordered array of MainTypes.
+ * 
  * @param unit_id - The unit ID to decode
  * @returns Array of MainTypes in sorted order
  * @throws Error if unit_id is invalid
@@ -707,6 +742,10 @@ function decode_uvarint(bytes: Uint8Array): number {
 /**
  * Normalize a multiformat encoded ISCC to standard base32 encoding.
  * Returns the input unchanged (but cleaned) if it's not multiformat encoded.
+ * 
+ * @param iscc_code - ISCC code to normalize
+ * @returns Normalized ISCC code in base32 encoding
+ * @throws Error if multiformat codec is malformed
  */
 export function normalize_multiformat(iscc_code: string): string {
     const decoders: Record<string, (input: string) => Uint8Array> = {

@@ -1,13 +1,23 @@
-import { IHasher } from 'hash-wasm/dist/lib/WASMInterface';
-import { encode_component } from './codec';
-import { MT, ST, Version } from './constants';
-import { createBLAKE3 } from 'hash-wasm';
+import { InstanceHasherV0 } from './code-instance-hasher';
 
 /**
- * Generates an ISCC Instance-Code from a data stream
- * @param stream - Input data buffer
- * @param bits - Number of bits for the hash (default 64)
- * @returns Object containing ISCC code, datahash and filesize
+ * Generates an ISCC Instance-Code from a data stream.
+ * 
+ * The Instance-Code is generated using the BLAKE3 cryptographic hash function
+ * to create a unique identifier for the exact binary content of a file.
+ * 
+ * @param stream - Input data buffer to generate the hash from
+ * @param bits - Optional. The number of bits for the hash (default: 64)
+ * @returns Object containing the ISCC code, datahash (multihash), and filesize
+ * 
+ * @example
+ * ```typescript
+ * const data = Buffer.from('Hello, World!');
+ * const result = await gen_instance_code(data, 64);
+ * console.log(result.iscc);     // Outputs: "ISCC:..."
+ * console.log(result.datahash); // Outputs: BLAKE3 multihash
+ * console.log(result.filesize); // Outputs: 13
+ * ```
  */
 export async function gen_instance_code(
     stream: Buffer,
@@ -21,7 +31,12 @@ export async function gen_instance_code(
 }
 
 /**
- * Generate an ISCC Instance-Code using version 0 algorithm
+ * Generates a version 0 ISCC Instance-Code from a data stream.
+ * 
+ * @param stream - Input data buffer
+ * @param bits - Optional. The number of bits for the hash (default: 64)
+ * @returns Object containing the ISCC code, datahash, and filesize
+ * @internal
  */
 export async function gen_instance_code_v0(
     stream: Buffer,
@@ -44,51 +59,15 @@ export async function gen_instance_code_v0(
     };
 }
 
+/**
+ * Creates a cryptographic hash from a data stream using BLAKE3.
+ * 
+ * @param stream - Input data buffer
+ * @returns Promise resolving to the hex-encoded hash string
+ * @internal
+ */
 export async function hash_instance_v0(stream: Buffer): Promise<string> {
     const hasher = await InstanceHasherV0.create();
     await hasher.push(stream);
     return await hasher.digest();
 }
-
-class InstanceHasherV0 {
-    private hasher: IHasher;
-    public filesize: number = 0;
-    private static mh_prefix: Uint8Array = new Uint8Array([0x1e, 0x20]);
-    public multihash: string | null = null;
-
-    private constructor(hasher: IHasher) {
-        this.hasher = hasher;
-        this.hasher.init();
-    }
-
-    static async create(): Promise<InstanceHasherV0> {
-        const hasher = await createBLAKE3();
-        return new InstanceHasherV0(hasher);
-    }
-
-    async push(data: Buffer): Promise<void> {
-        this.filesize += data.length;
-        this.hasher.update(data);
-    }
-
-    async digest(): Promise<string> {
-        const digest = this.hasher.digest('binary');
-        this.multihash = Buffer.from([
-            ...InstanceHasherV0.mh_prefix,
-            ...digest
-        ]).toString('hex');
-        return Buffer.from(digest).toString('hex');
-    }
-
-    async code(bits: number): Promise<string> {
-        return encode_component(
-            MT.INSTANCE,
-            ST.NONE,
-            Version.V0,
-            bits,
-            await this.digest()
-        );
-    }
-}
-
-export const InstanceHasher = InstanceHasherV0;

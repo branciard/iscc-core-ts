@@ -16,7 +16,7 @@
     "test-esm-isolated": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js -c=jest-esm-isolated.config.mjs --no-cache",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
     "lint": "eslint ./src",
-    "make:docs/reference": "typedoc src/index.ts --out ../../docs/generated/iscc-core-ts --excludeInternal"
+    "make:docs/reference": "typedoc src/index.ts --out ./docs/generated/iscc-core-ts --excludeInternal"
   },
   "repository": {
     "type": "git",

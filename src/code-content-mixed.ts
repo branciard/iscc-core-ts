@@ -9,6 +9,29 @@ import {
 import { MT, ST_CC, MIXED_BITS, Version } from './constants';
 import { alg_simhash } from './simhash';
 
+/**
+ * Generates an ISCC Mixed Code from multiple ISCC Content Codes.
+ * 
+ * The Mixed Code is a composite similarity hash generated from multiple Content Codes.
+ * It can be used to identify content that shares elements from multiple sources.
+ * 
+ * @param codes - Array of ISCC Content Code strings to combine
+ * @param bits - Optional. The number of bits for the similarity hash. Must be multiple of 32 (default: MIXED_BITS)
+ * @param version - Optional. ISCC version number (currently only 0 is supported)
+ * @returns Object containing the ISCC Mixed Code and the original input codes
+ * @throws {Error} If an unsupported version is provided
+ * 
+ * @example
+ * ```typescript
+ * const codes = [
+ *   "ISCC:KACYPXWxxxxx", // Content Code 1
+ *   "ISCC:KACYPXWyyyyy"  // Content Code 2
+ * ];
+ * const result = gen_mixed_code(codes, 64, 0);
+ * console.log(result.iscc);  // Outputs: "ISCC:..."
+ * console.log(result.parts); // Original input codes
+ * ```
+ */
 export function gen_mixed_code(
     codes: string[],
     bits?: number,
@@ -24,6 +47,14 @@ export function gen_mixed_code(
     }
 }
 
+/**
+ * Generates a version 0 ISCC Mixed Code from multiple Content Codes.
+ * 
+ * @param codes - Array of ISCC Content Code strings to combine
+ * @param bits - Optional. The number of bits for the similarity hash (default: MIXED_BITS)
+ * @returns Object containing the ISCC Mixed Code and the original input codes
+ * @internal
+ */
 export function gen_mixed_code_v0(
     codes: string[],
     bits: number = MIXED_BITS
@@ -44,17 +75,30 @@ export function gen_mixed_code_v0(
 }
 
 /**
- * Create a similarity hash from multiple Content-Code digests.
- *
- * The similarity hash is created from the bodies of the input codes with the first
- * byte of the code-header prepended.
- *
- * All codes must be of main-type CONTENT and have a minimum length of `bits`.
- *
- * @param cc_digests - Array of Content-Code digests
- * @param bits - Target bit-length of generated Content-Code-Mixed
- * @returns Similarity preserving byte hash as Uint8Array
- * @throws Error if input validation fails
+ * Creates a similarity hash from multiple Content-Code digests.
+ * 
+ * The similarity hash is created by:
+ * 1. Validating input codes (minimum 2 codes, all CONTENT type)
+ * 2. Retaining the first byte of each code's header
+ * 3. Combining with truncated body bytes
+ * 4. Generating a similarity-preserving hash
+ * 
+ * @param cc_digests - Array of Content-Code digests as Uint8Arrays
+ * @param bits - Target bit-length of generated Content-Code-Mixed (default: MIXED_BITS)
+ * @returns Similarity-preserving hash as a hex string
+ * @throws {Error} If input validation fails:
+ *   - Fewer than 2 codes provided
+ *   - Non-CONTENT type codes included
+ *   - Codes shorter than required bit length
+ * 
+ * @example
+ * ```typescript
+ * const digests = [
+ *   new Uint8Array([...]), // Content Code digest 1
+ *   new Uint8Array([...])  // Content Code digest 2
+ * ];
+ * const hash = soft_hash_codes_v0(digests, 64);
+ * ```
  */
 export function soft_hash_codes_v0(
     cc_digests: Uint8Array[],

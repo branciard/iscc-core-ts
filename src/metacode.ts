@@ -24,30 +24,48 @@ import {
     META_TRIM_NAME,
     MT,
     Version,
-    IMetaCodeResult,
     ST
 } from './constants';
 
 /**
- *
- * Implementation of
+ * Generates a Meta-Code from content metadata.
+ * 
+ * Implements the ISCC Meta-Code generation algorithm as specified in:
  * https://github.com/iscc/iscc-specs/blob/version-1.0/docs/specification.md#generate-meta-code
- *
- * 1 - Verify the requested ISCC version is supported by your implementation.
- *
- * @param name
- * @param description
- * @param version
- * @returns IMetaCodeResult
+ * 
+ * @param name - Title or name of the content
+ * @param description - Optional description of the content
+ * @param meta - Optional metadata in JSON format or as Data-URL
+ * @param bits - Optional number of bits for the hash (default: METACODE_BITS)
+ * @param version - Optional ISCC version number (default: 0)
+ * @returns Promise resolving to {iscc, metahash, name, description?, meta?, version}
+ * @throws {Error} If version is unsupported or input validation fails
+ * 
+ * @example
+ * ```typescript
+ * const result = await gen_meta_code(
+ *   "The Title",
+ *   "A description",
+ *   JSON.stringify({ key: "value" })
+ * );
+ * console.log(result.iscc);     // ISCC code
+ * console.log(result.metahash); // Blake3 hash
+ * ```
  */
-
 export async function gen_meta_code(
     name: string,
     description?: string,
     meta?: string,
     bits?: number,
     version?: number
-): Promise<IMetaCodeResult> {
+): Promise<{
+    iscc: string;
+    metahash: string;
+    name: string;
+    description?: string;
+    meta?: string;
+    version: number;
+}> {
     if (!version) {
         version = 0;
     }
@@ -59,18 +77,29 @@ export async function gen_meta_code(
 }
 
 /**
- *
- * @param name
- * @param description
- * @returns
+ * Generates a version 0 Meta-Code from content metadata.
+ * 
+ * @param name - Title or name of the content
+ * @param description - Optional description of the content
+ * @param meta - Optional metadata in JSON format or as Data-URL
+ * @param bits - Optional number of bits for the hash
+ * @returns Promise resolving to metadata result object
+ * @throws {Error} If name is empty after normalization or metadata format is invalid
+ * @internal
  */
-
 export async function gen_meta_code_v0(
     name: string,
     description?: string,
     meta?: string,
     bits?: number
-): Promise<IMetaCodeResult> {
+): Promise<{
+    iscc: string;
+    metahash: string;
+    name: string;
+    description?: string;
+    meta?: string;
+    version: number;
+}> {
     let nameResult: string = '';
     nameResult = text_clean(name);
     nameResult = text_remove_newlines(nameResult);
@@ -151,11 +180,34 @@ export async function gen_meta_code_v0(
     };
 }
 
-export async function multi_hash_blake3(data: string) {
+/**
+ * Generates a multihash-encoded BLAKE3 hash of input data.
+ * 
+ * @param data - Input string to hash
+ * @returns Promise resolving to multihash-encoded string
+ * @internal
+ */
+export async function multi_hash_blake3(data: string): Promise<string> {
     const blake3Hash: string = await blake3(data);
     return '1e' + '20' + blake3Hash;
 }
 
+/**
+ * Generates a similarity hash from metadata using version 0 algorithm.
+ * 
+ * The process:
+ * 1. Collapses and normalizes the name
+ * 2. Generates n-grams from the name
+ * 3. Computes BLAKE3 hashes of n-grams
+ * 4. Combines hashes using SimHash
+ * 5. If extra data provided, processes it similarly and interleaves results
+ * 
+ * @param name - Primary text to hash
+ * @param extra - Optional additional text or JSON data
+ * @param descJsonFormat - If true, treats extra as JSON data
+ * @returns Promise resolving to hash digest string
+ * @internal
+ */
 export async function soft_hash_meta_v0(
     name: string,
     extra?: string,

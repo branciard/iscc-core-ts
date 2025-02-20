@@ -1,7 +1,14 @@
+/**
+ * Default bit lengths for various ISCC code components
+ */
 export const METACODE_BITS: number = 64;
 export const TEXT_BITS: number = 64;
 export const IMAGE_BITS: number = 64;
 export const MIXED_BITS: number = 64;
+
+/**
+ * Configuration constants for metadata processing
+ */
 export const META_TRIM_NAME: number = 128;
 export const META_NGRAM_SIZE_TEXT: number = 3;
 export const META_NGRAM_SIZE_BYTES: number = 4;
@@ -9,20 +16,18 @@ export const CODE_CONTENT_TEXT_BITS: number = 64;
 export const TEXT_NGRAM_SIZE = 13;
 
 /**
+ * Main Types for ISCC codes.
  * 
- *     """
-    ## MT - MainTypes
-
-    | Uint | Symbol   | Bits | Purpose                                                 |
-    |----- |:---------|------|---------------------------------------------------------|
-    | 0    | META     | 0000 | Match on metadata similarity                            |
-    | 1    | SEMANTIC | 0001 | Match on semantic content similarity                    |
-    | 2    | CONTENT  | 0010 | Match on perceptual content similarity                  |
-    | 3    | DATA     | 0011 | Match on data similarity                                |
-    | 4    | INSTANCE | 0100 | Match on data identity                                  |
-    | 5    | ISCC     | 0101 | Composite of two or more ISCC-UNITs with common header  |
-    """
-
+ * | Value | Type     | Purpose                                    |
+ * |-------|----------|--------------------------------------------| 
+ * | 0     | META     | Match on metadata similarity               |
+ * | 1     | SEMANTIC | Match on semantic content similarity       |
+ * | 2     | CONTENT  | Match on perceptual content similarity     |
+ * | 3     | DATA     | Match on data similarity                   |
+ * | 4     | INSTANCE | Match on data identity                     |
+ * | 5     | ISCC     | Composite of multiple ISCC-UNITs          |
+ * | 6     | ID       | Non-standard: Blockchain identifiers       |
+ * | 7     | FLAKE    | Non-standard: Unique identifiers          |
  */
 export enum MT {
     META = 0,
@@ -31,37 +36,30 @@ export enum MT {
     DATA = 3,
     INSTANCE = 4,
     ISCC = 5,
-    ID = 6, // Not part of standard ISCC-ISO-24138-2024
+    ID = 6,    // Not part of standard ISCC-ISO-24138-2024
     FLAKE = 7, // Not part of standard ISCC-ISO-24138-2024
     TESTMainType8 = 8 // Not part of standard ISCC-ISO-24138-2024
 }
 
 /**
- * ## ST - SubTypes
- *
- * | Uint | Symbol   | Bits | Purpose                                                 |
- * |----- |:---------|------|---------------------------------------------------------|
- * | 0    | NONE     | 0000 | For MainTypes that do not specify SubTypes    (META, DATA, and INSTANCE )           |
+ * Basic SubTypes for MainTypes that don't specify specialized subtypes.
  */
 export enum ST {
-    /** For MainTypes that do not specify SubTypes */
+    /** For MainTypes that do not specify SubTypes (META, DATA, and INSTANCE) */
     NONE = 0
 }
 
 /**
- * ### ST_CC
- *
- * SubTypes for `MT.CONTENT`
- *
- * | Uint | Symbol   | Bits | Purpose                                                 |
- * |----- |:---------|------|---------------------------------------------------------|
- * | 0    | TEXT     | 0000 | Match on syntactic text similarity                      |
- * | 1    | IMAGE    | 0001 | Match on perceptual image similarity                    |
- * | 2    | AUDIO    | 0010 | Match on audio chroma similarity                        |
- * | 3    | VIDEO    | 0011 | Match on perceptual similarity                          |
- * | 4    | MIXED    | 0100 | Match on similarity of content codes                    |
+ * SubTypes for Content Codes (MT.CONTENT).
+ * 
+ * | Value | Type  | Purpose                                    |
+ * |-------|-------|--------------------------------------------| 
+ * | 0     | TEXT  | Match on syntactic text similarity         |
+ * | 1     | IMAGE | Match on perceptual image similarity       |
+ * | 2     | AUDIO | Match on audio chroma similarity           |
+ * | 3     | VIDEO | Match on perceptual video similarity       |
+ * | 4     | MIXED | Match on similarity of content codes       |
  */
-
 export enum ST_CC {
     TEXT = 0,
     IMAGE = 1,
@@ -72,96 +70,55 @@ export enum ST_CC {
 }
 
 /**
- * ### ST_ISCC
- *
- * SubTypes for `MT.ISCC`
- *
- * | Uint | Symbol   | Bits | Purpose                                                 |
- * |----- |:---------|------|---------------------------------------------------------|
- * | 0    | TEXT     | 0000 | Composite ISCC including Text-Code                      |
- * | 1    | IMAGE    | 0001 | Composite ISCC including Image-Code                     |
- * | 2    | AUDIO    | 0010 | Composite ISCC including Audio-Code                     |
- * | 3    | VIDEO    | 0011 | Composite ISCC including Video-Code                     |
- * | 4    | MIXED    | 0100 | Composite ISCC including Mixed-Code                     |
- * | 5    | SUM      | 0101 | Composite ISCC including only Data- and Instance-Code   |
- * | 6    | NONE     | 0110 | Composite ISCC including Meta, Data and Instance-Code   |
+ * SubTypes for Composite ISCC Codes (MT.ISCC).
+ * 
+ * | Value | Type  | Purpose                                           |
+ * |-------|-------|---------------------------------------------------| 
+ * | 0     | TEXT  | Composite including Text-Code                      |
+ * | 1     | IMAGE | Composite including Image-Code                     |
+ * | 2     | AUDIO | Composite including Audio-Code                     |
+ * | 3     | VIDEO | Composite including Video-Code                     |
+ * | 4     | MIXED | Composite including Mixed-Code                     |
+ * | 5     | SUM   | Composite with only Data and Instance-Code        |
+ * | 6     | NONE  | Composite with Meta, Data and Instance-Code       |
  */
 export enum ST_ISCC {
-    /** Composite ISCC including Text-Code */
     TEXT = 0,
-
-    /** Composite ISCC including Image-Code */
     IMAGE = 1,
-
-    /** Composite ISCC including Audio-Code */
     AUDIO = 2,
-
-    /** Composite ISCC including Video-Code */
     VIDEO = 3,
-
-    /** Composite ISCC including Mixed-Code */
     MIXED = 4,
-
-    /** Composite ISCC including only Data- and Instance-Code */
     SUM = 5,
-
-    /** Composite ISCC including Meta, Data and Instance-Code */
     NONE = 6
 }
 
 /**
- * SubTypes for `MT.ID`
+ * SubTypes for ID Codes (MT.ID) - Not part of standard ISCC-ISO-24138-2024.
  * 
- * Not part of standard ISCC-ISO-24138-2024
- *
- * | Uint | Symbol   | Bits | Purpose                                                 |
- * |----- |:---------|------|---------------------------------------------------------|
- * | 0    | PRIVATE  | 0000 | ISCC-ID minted via private repository (not unique)      |
- * | 1    | BITCOIN  | 0001 | ISCC-ID minted via Bitcoin blockchain                   |
- * | 2    | ETHEREUM | 0010 | ISCC-ID minted via Ethereum blockchain                  |
- * | 3    | POLYGON  | 0011 | ISCC-ID minted via Polygon blockchain                   |
+ * | Value | Type     | Purpose                                    |
+ * |-------|----------|--------------------------------------------| 
+ * | 0     | PRIVATE  | Private repository minted ID               |
+ * | 1     | BITCOIN  | Bitcoin blockchain minted ID               |
+ * | 2     | ETHEREUM | Ethereum blockchain minted ID              |
+ * | 3     | POLYGON  | Polygon blockchain minted ID               |
  */
 export enum ST_ID {
-    /** ISCC-ID minted via private repository (not unique) */
     PRIVATE = 0,
-
-    /** ISCC-ID minted via Bitcoin blockchain */
     BITCOIN = 1,
-
-    /** ISCC-ID minted via Ethereum blockchain */
     ETHEREUM = 2,
-
-    /** ISCC-ID minted via Polygon blockchain */
     POLYGON = 3
 }
 
-/*
-        ## VS - Version
-    
-        Code Version
-    
-        | Uint | Symbol   | Bits | Purpose                                                 |
-        |----- |:---------|------|---------------------------------------------------------|
-        | 0    | V0       | 0000 | Initial Version of Code without breaking changes        |
-    
-        """
-    
-        V0 = 0
-    
-    */
-
+/**
+ * ISCC Version numbers
+ */
 export enum Version {
     V0 = 0,
     V1 = 1
 }
 
 /**
- * Supported Multibase encodings.
- * - base16 -> f
- * - base32 -> b
- * - base32hex -> v
- * - base58btc -> z
- * - base64url -> u
+ * Supported Multibase encodings
  */
 export enum MULTIBASE {
     base16 = 'f',
@@ -171,35 +128,24 @@ export enum MULTIBASE {
     base64url = 'u'
 }
 
-export interface IMetaCodeResult {
-    iscc: string;
-    metahash: string;
-    name: string;
-    description?: string;
-    meta?: string;
-    version: number;
-}
 
 /**
- * ## LN - Length
- *
- * Valid lengths for hash-digests.
+ * Valid lengths for hash-digests in bits
  */
 export enum Length {
     L32 = 32,
     L64 = 64,
-    // L72 = 72, // not part of standard ISCC-ISO-24138-2024
-    // L80 = 80, // not part of standard ISCC-ISO-24138-2024
     L96 = 96,
     L128 = 128,
     L160 = 160,
     L192 = 192,
     L224 = 224,
     L256 = 256
-    // L320 = 320 // not part of standard ISCC-ISO-24138-2024
 }
 
-// Define UNITS as readonly tuples
+/**
+ * Valid combinations of ISCC units
+ */
 export const UNITS: ReadonlyArray<ReadonlyArray<MT>> = [
     [],
     [MT.CONTENT],
@@ -213,7 +159,6 @@ export const UNITS: ReadonlyArray<ReadonlyArray<MT>> = [
 
 /**
  * Random gear vector for CDC calculations
- * @description Used for content-defined chunking operations
  */
 export const CDC_GEAR = Object.freeze([
     1553318008, 574654857, 759734804, 310648967, 1393527547, 1195718329,

@@ -5,10 +5,23 @@ import { algMinhash256 } from './minhash';
 import { xxHash32 } from 'js-xxhash';
 
 /**
- * Generates an ISCC Data-Code from a data stream
- * @param stream - Input data buffer
- * @param bits - Number of bits for the hash (default 64)
- * @returns Object containing ISCC code
+ * Generates an ISCC Data-Code from a data stream.
+ * 
+ * The Data-Code is generated from a binary data stream using Content-Defined Chunking (CDC)
+ * and MinHash for similarity hashing. This code can be used to identify similar binary data
+ * streams regardless of their format.
+ * 
+ * @param stream - Input data buffer to generate the hash from
+ * @param bits - Optional. The number of bits for the similarity hash. Must be multiple of 32 (default: 64)
+ * @returns Object containing the ISCC code as a string
+ * @throws {Error} If an unsupported version is provided
+ * 
+ * @example
+ * ```typescript
+ * const data = Buffer.from('Hello, World!');
+ * const result = await gen_data_code(data, 64);
+ * console.log(result.iscc); // Outputs: "ISCC:..."
+ * ```
  */
 export async function gen_data_code(
     stream: Buffer,
@@ -18,10 +31,12 @@ export async function gen_data_code(
 }
 
 /**
- * Generates an ISCC Data-Code from a data stream
+ * Generates a version 0 ISCC Data-Code from a data stream.
+ * 
  * @param stream - Input data buffer
- * @param bits - Number of bits for the hash (default 64)
- * @returns Object containing ISCC code
+ * @param bits - Optional. The number of bits for the similarity hash (default: 64)
+ * @returns Object containing the ISCC code as a string
+ * @internal
  */
 export async function gen_data_code_v0(
     stream: Buffer,
@@ -35,19 +50,42 @@ export async function gen_data_code_v0(
     return { iscc };
 }
 
+/**
+ * Creates a similarity-preserving hash from a data stream.
+ * 
+ * @param stream - Input data buffer
+ * @returns Promise resolving to a Buffer containing the similarity hash
+ * @internal
+ */
 export async function soft_hash_data_v0(stream: Buffer): Promise<Buffer> {
     const hasher = new DataHasherV0();
     await hasher.push(stream);
     return hasher.digest();
 }
 
+/**
+ * Handles the chunking and hashing of data streams for ISCC Data-Code generation.
+ * 
+ * The DataHasher uses Content-Defined Chunking (CDC) to split the input stream into
+ * variable-sized chunks based on content boundaries. These chunks are then processed
+ * using xxHash32 and MinHash to generate a similarity-preserving hash.
+ */
 export class DataHasherV0 {
     private chunkFeatures: number[] = [];
     private chunkSizes: number[] = [];
     private tail: Buffer | null = null;
 
+    /**
+     * Creates a new DataHasher instance.
+     */
     constructor() {}
 
+    /**
+     * Processes a chunk of data from the input stream.
+     * 
+     * @param data - Buffer containing the data chunk to process
+     * @returns Promise that resolves when the chunk has been processed
+     */
     async push(data: Buffer): Promise<void> {
         let localData = data;
         if (this.tail) {
@@ -72,11 +110,22 @@ export class DataHasherV0 {
         }
     }
 
+    /**
+     * Generates the final hash digest.
+     * 
+     * @returns Buffer containing the final hash
+     */
     digest(): Buffer {
         this._finalize();
         return Buffer.from(algMinhash256(this.chunkFeatures.map(BigInt)));
     }
 
+    /**
+     * Generates the ISCC code from the processed data.
+     * 
+     * @param bits - Optional. The number of bits for the hash (default: 64)
+     * @returns String containing the encoded ISCC component
+     */
     code(bits: number = 64): string {
         return encode_component(
             MT.DATA,
@@ -87,6 +136,11 @@ export class DataHasherV0 {
         );
     }
 
+    /**
+     * Finalizes the processing of any remaining data.
+     * 
+     * @internal
+     */
     private _finalize(): void {
         if (this.tail !== null) {
             this.chunkFeatures.push(xxHash32(this.tail) >>> 0);
@@ -96,4 +150,7 @@ export class DataHasherV0 {
     }
 }
 
+/**
+ * Alias for the current version of DataHasher.
+ */
 export const DataHasher = DataHasherV0;

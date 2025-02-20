@@ -1,3 +1,8 @@
+/**
+ * Functions for generating ISCC Content-Codes from text input.
+ * @module code-content-text
+ */
+
 import { TEXT_NGRAM_SIZE } from './constants';
 import { text_collapse } from './content-normalization';
 import { safeHex, sliding_window } from './utils';
@@ -6,6 +11,22 @@ import { xxHash32 } from 'js-xxhash';
 import { encode_component } from './codec';
 import { MT, ST_CC, TEXT_BITS, Version } from './constants';
 
+/**
+ * Generates an ISCC Content-Code from text input.
+ * 
+ * @param text - The input text to generate the code from
+ * @param bits - Number of bits for the hash (default: TEXT_BITS)
+ * @param version - Version of the ISCC algorithm (default: 0)
+ * @returns Object containing the ISCC code and character count
+ * @throws Error if version is not 0
+ * 
+ * @example
+ * ```typescript
+ * const result = gen_text_code("Hello World");
+ * console.log(result.iscc); // "ISCC:CTDZR6DQRS5LNVZV"
+ * console.log(result.characters); // 11
+ * ```
+ */
 export function gen_text_code(
     text: string,
     bits?: number,
@@ -25,12 +46,19 @@ export function gen_text_code(
 }
 
 /**
- *
- * @param name
- * @param description
- * @returns
+ * Generates an ISCC Content-Code from text input using algorithm v0.
+ * 
+ * @param text - The input text to generate the code from
+ * @param bits - Number of bits for the hash (default: TEXT_BITS)
+ * @returns Object containing the ISCC code and character count
+ * 
+ * @example
+ * ```typescript
+ * const result = gen_text_code_v0("Hello World");
+ * console.log(result.iscc); // "ISCC:CTDZR6DQRS5LNVZV"
+ * console.log(result.characters); // 11
+ * ```
  */
-
 export function gen_text_code_v0(
     text: string,
     bits?: number
@@ -57,27 +85,27 @@ export function gen_text_code_v0(
 }
 
 /**
+ * Creates a 256-bit similarity preserving hash for text input with algorithm v0.
  * 
+ * The algorithm:
+ * 1. Slides over text with a TEXT_NGRAM_SIZE wide window
+ * 2. Creates xxh32 hashes for each window
+ * 3. Creates a minhash_256 from the generated hashes
  * 
- *     Creates a 256-bit similarity preserving hash for text input with algorithm v0.
-
-    - Slide over text with a
-      [`text_ngram_size`][iscc_core.options.CoreOptions.text_ngram_size] wide window
-      and create [`xxh32`](https://cyan4973.github.io/xxHash/) hashes
-    - Create a [`minhash_256`][iscc_core.minhash.alg_minhash_256] from the hashes generated
-      in the previous step.
-
-    !!! note
-
-        Before passing text to this function it must be:
-
-        - stripped of markup
-        - normalized
-        - stripped of whitespace
-        - lowercased
-
- * @param text 
- * @returns 
+ * Note: Before passing text to this function it must be:
+ * - stripped of markup
+ * - normalized
+ * - stripped of whitespace
+ * - lowercased
+ * 
+ * @param text - The preprocessed text to hash
+ * @returns A 256-bit similarity preserving hash as Uint8Array
+ * 
+ * @example
+ * ```typescript
+ * const hash = soft_hash_text_v0("hello world");
+ * console.log(Buffer.from(hash).toString('hex'));
+ * ```
  */
 export function soft_hash_text_v0(text: string): Uint8Array {
     const ngrams = sliding_window(text, TEXT_NGRAM_SIZE);

@@ -11,10 +11,34 @@ import XRegExp from 'xregexp';
 
 import { LINE_ENDING_REGEX } from './constants';
 
+/**
+ * Trims and normalizes text according to ISCC specification.
+ * 
+ * Implements the text_trim function as specified in https://iscc.codes/specification/#text_trim
+ * 
+ * @param text - Input text to be trimmed
+ * @param limit - Optional byte limit for the text
+ * @returns Trimmed and normalized text
+ * 
+ * @example
+ * ```typescript
+ * const text = "  Hello World!  ";
+ * const trimmed = text_trim(text);
+ * console.log(trimmed); // "Hello World!"
+ * ```
+ */
 export function text_trim(text: string, limit?: number): string {
     return text_encodeUTF8(text, limit).trim();
 }
 
+/**
+ * Encodes text to UTF-8 and optionally limits its length.
+ * 
+ * @param text - Input text to encode
+ * @param limit - Optional maximum number of bytes
+ * @returns UTF-8 encoded text, potentially truncated
+ * @internal
+ */
 export function text_encodeUTF8(text: string, limit?: number): string {
     const encoder = new TextEncoder();
     const utf8Arr = encoder.encode(text);
@@ -27,6 +51,13 @@ export function text_encodeUTF8(text: string, limit?: number): string {
     return text;
 }
 
+/**
+ * Removes newlines from text and replaces them with spaces.
+ * Consecutive whitespace is collapsed into a single space.
+ * 
+ * @param text - Input text to process
+ * @returns Text with newlines removed
+ */
 export function text_remove_newlines(text: string): string {
     return text
         .split(/(\s+)/)
@@ -34,6 +65,13 @@ export function text_remove_newlines(text: string): string {
         .join(' ');
 }
 
+/**
+ * Checks if a character belongs to the Unicode Control category.
+ * 
+ * @param s - Single character to check
+ * @returns True if character is in Control category
+ * @internal
+ */
 function isCharControlCategoryUnicode(s: string) {
     const cc = XRegExp('^\\p{Control}+$');
     if (cc.test(s)) {
@@ -43,6 +81,13 @@ function isCharControlCategoryUnicode(s: string) {
     }
 }
 
+/**
+ * Checks if a character is a Unicode newline character.
+ * 
+ * @param s - Single character to check
+ * @returns True if character is a newline
+ * @internal
+ */
 function isCharNewLinesUnicode(s: string) {
     const regex = LINE_ENDING_REGEX
     if (regex.test(s)) {
@@ -59,6 +104,26 @@ function isCharNewLinesUnicode(s: string) {
  * @returns text normalized
  */
 
+/**
+ * Cleans text according to ISCC specification.
+ * 
+ * The cleaning process:
+ * 1. Normalizes text to NFKC form
+ * 2. Removes control characters except newlines
+ * 3. Limits consecutive newlines to maximum of 2
+ * 4. Converts all newlines to LF (\u000A)
+ * 5. Trims leading/trailing whitespace
+ * 
+ * @param text - Input text to clean
+ * @returns Cleaned text
+ * 
+ * @example
+ * ```typescript
+ * const text = "Hello\r\n\r\n\r\nWorld";
+ * const cleaned = text_clean(text);
+ * console.log(cleaned); // "Hello\n\nWorld"
+ * ```
+ */
 export function text_clean(text: string): string {
     text = text.normalize('NFKC');
     let textWithoutCC = '';
@@ -89,6 +154,30 @@ export function text_clean(text: string): string {
     return text.trim();
 }
 
+/**
+ * Collapses text for similarity matching according to ISCC specification.
+ * 
+ * The collapsing process:
+ * 1. Normalizes text to NFD form
+ * 2. Trims whitespace
+ * 3. Removes all whitespace
+ * 4. Converts to lowercase
+ * 5. Removes Unicode characters in categories:
+ *    - Other (Cc, Cf, Cn, Co, Cs)
+ *    - Mark (Mc, Me, Mn)
+ *    - Punctuation (Pc, Pd, Pe, Pf, Pi, Po, Ps)
+ * 6. Normalizes to NFKC form
+ * 
+ * @param text - Input text to collapse
+ * @returns Collapsed text
+ * 
+ * @example
+ * ```typescript
+ * const text = "Hello, World!";
+ * const collapsed = text_collapse(text);
+ * console.log(collapsed); // "helloworld"
+ * ```
+ */
 export function text_collapse(text: string): string {
     text = text.normalize('NFD');
     text = text_trim(text);

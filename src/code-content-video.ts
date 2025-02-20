@@ -12,7 +12,11 @@ command line parameters:
 `$ fpcalc -raw -json -signed -length 0 myaudiofile.mp3`
  */
 
-type FrameSig = number[];
+/**
+ * Array of permutation pairs used for WTA (Winner Takes All) hashing.
+ * Each pair contains two indices [i, j] used to compare values in the video signature.
+ * @internal
+ */
 export const WTA_VIDEO_ID_PERMUTATIONS: [number, number][] = [
     [292, 16],
     [219, 247],
@@ -272,6 +276,29 @@ export const WTA_VIDEO_ID_PERMUTATIONS: [number, number][] = [
     [28, 351]
 ];
 
+/**
+ * Generates an ISCC Video Code from frame signatures.
+ * 
+ * The Video Code is generated from a sequence of MP7 frame signatures.
+ * Each frame signature is an array of numerical values representing
+ * visual features extracted from video frames.
+ * 
+ * @param frame_sigs - Array of frame signatures, each signature being an array of numbers
+ * @param bits - Optional. The number of bits for the similarity hash. Must be multiple of 64 (default: 64)
+ * @param version - Optional. ISCC version number (currently only 0 is supported)
+ * @returns Object containing the ISCC code as a string
+ * @throws {Error} If an unsupported version is provided
+ * 
+ * @example
+ * ```typescript
+ * const frameSigs = [
+ *   [0.5, 0.6, 0.4, ...], // Frame 1 signature
+ *   [0.3, 0.7, 0.5, ...], // Frame 2 signature
+ * ];
+ * const result = gen_video_code(frameSigs, 64, 0);
+ * console.log(result.iscc); // Outputs: "ISCC:..."
+ * ```
+ */
 export function gen_video_code(
     frame_sigs: FrameSig[],
     bits?: number,
@@ -288,6 +315,15 @@ export function gen_video_code(
         throw new Error('Only ISCC version 0 is supported');
     }
 }
+
+/**
+ * Generates a version 0 ISCC Video Code from frame signatures.
+ * 
+ * @param frameSigs - Array of frame signatures
+ * @param bits - Optional. The number of bits for the similarity hash (default: 64)
+ * @returns Object containing the ISCC code as a string
+ * @internal
+ */
 export function gen_video_code_v0(
     frameSigs: FrameSig[],
     bits: number = 64
@@ -314,6 +350,27 @@ export function gen_video_code_v0(
     return { iscc };
 }
 
+/**
+ * Creates a similarity-preserving hash from MP7 frame signatures.
+ * 
+ * The function generates a video hash using the following steps:
+ * 1. Converts frame signatures to unique string representations
+ * 2. Calculates vector sum of all unique signatures
+ * 3. Applies WTA (Winner Takes All) hashing to the summed vector
+ * 
+ * @param frameSigs - 2D array of MP7 frame signatures
+ * @param bits - Number of bits for the resulting similarity hash (default: 64)
+ * @returns Uint8Array containing the similarity-preserving hash
+ * 
+ * @example
+ * ```typescript
+ * const frameSigs = [
+ *   [0.5, 0.6, 0.4, ...], // Frame 1 signature
+ *   [0.3, 0.7, 0.5, ...], // Frame 2 signature
+ * ];
+ * const hash = soft_hash_video_v0(frameSigs, 64);
+ * ```
+ */
 export function soft_hash_video_v0(
     frameSigs: FrameSig[],
     bits: number = 64
@@ -333,6 +390,17 @@ export function soft_hash_video_v0(
     return algWtahash(vecsum, bits);
 }
 
+/**
+ * Calculates a WTA (Winner Takes All) hash for a vector.
+ * 
+ * Uses predefined permutation pairs to compare values and generate
+ * a binary hash based on which value is larger in each pair.
+ * 
+ * @param vec - Input vector of 380 values (MP7 frame signature)
+ * @param bits - Number of bits to generate in the hash
+ * @returns Uint8Array containing the WTA hash
+ * @internal
+ */
 function algWtahash(vec: number[], bits: number): Uint8Array {
     /**
      * Calculate WTA Hash for vector with 380 values (MP7 frame signature).
@@ -353,3 +421,9 @@ function algWtahash(vec: number[], bits: number): Uint8Array {
     }
     return byteArray;
 }
+
+/**
+ * Type definition for a frame signature.
+ * Represents an array of numerical values extracted from a video frame.
+ */
+export type FrameSig = number[];

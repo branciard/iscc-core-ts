@@ -2,6 +2,25 @@ import { encode_component } from './codec';
 import { MT, ST_CC, IMAGE_BITS, Version } from './constants';
 import { safeHex } from './utils';
 
+/**
+ * Generates an ISCC Image Code from normalized grayscale pixel values.
+ * 
+ * The Content-Code Image is generated from a sequence of normalized grayscale pixel values.
+ * The pixel values should be preprocessed and normalized before being passed to this function.
+ * 
+ * @param pixels - Array of normalized grayscale pixel values (should be 1024 values)
+ * @param bits - Optional. The number of bits for the similarity hash. Must be multiple of 32 (default: IMAGE_BITS)
+ * @param version - Optional. ISCC version number (currently only 0 is supported)
+ * @returns Object containing the ISCC code as a string
+ * @throws {Error} If an unsupported version is provided
+ * 
+ * @example
+ * ```typescript
+ * const pixels = [0.5, 0.6, 0.4, ...]; // 1024 normalized pixel values
+ * const result = gen_image_code(pixels, 64, 0);
+ * console.log(result.iscc); // Outputs: "ISCC:..."
+ * ```
+ */
 export function gen_image_code(
     pixels: number[],
     bits?: number,
@@ -20,12 +39,13 @@ export function gen_image_code(
 }
 
 /**
- *
- * @param name
- * @param description
- * @returns
+ * Generates a version 0 ISCC Image Code from normalized grayscale pixel values.
+ * 
+ * @param pixels - Array of normalized grayscale pixel values
+ * @param bits - Optional. The number of bits for the similarity hash (default: IMAGE_BITS)
+ * @returns Object containing the ISCC code as a string
+ * @internal
  */
-
 export function gen_image_code_v0(
     pixels: number[],
     bits?: number
@@ -50,11 +70,24 @@ export function gen_image_code_v0(
 }
 
 /**
- * Calculate image hash from normalized grayscale pixel sequence of length 1024.
- *
- * @param pixels - Normalized image pixels
- * @param bits - Bit-length of image hash (default 64).
- * @return Similarity preserving Image-Hash digest.
+ * Creates a similarity-preserving hash from normalized grayscale pixel values.
+ * 
+ * The function generates a perceptual image hash using the following steps:
+ * 1. Applies DCT (Discrete Cosine Transform) to rows of pixel values
+ * 2. Applies DCT to columns of the transformed values
+ * 3. Extracts 8x8 slices from the DCT matrix
+ * 4. Generates bits by comparing values to the median in each slice
+ * 
+ * @param pixels - Array of 1024 normalized grayscale pixel values
+ * @param bits - Number of bits for the resulting similarity hash (max 256)
+ * @returns Uint8Array containing the similarity-preserving hash
+ * @throws {Error} If bits exceeds 256 or if hash generation fails
+ * 
+ * @example
+ * ```typescript
+ * const pixels = [0.5, 0.6, 0.4, ...]; // 1024 normalized values
+ * const hash = soft_hash_image_v0(pixels, 64);
+ * ```
  */
 export function soft_hash_image_v0(pixels: number[], bits: number): Uint8Array {
     if (bits > 256) {
@@ -116,6 +149,13 @@ export function soft_hash_image_v0(pixels: number[], bits: number): Uint8Array {
     throw new Error('Failed to generate hash digest');
 }
 
+/**
+ * Calculates the median value from an array of numbers.
+ * 
+ * @param numbers - Array of numbers to find the median from
+ * @returns The median value
+ * @internal
+ */
 function median(numbers: number[]): number {
     const sorted = numbers.slice().sort((a, b) => a - b);
     const middle = Math.floor(sorted.length / 2);
@@ -127,6 +167,17 @@ function median(numbers: number[]): number {
     return sorted[middle];
 }
 
+/**
+ * Performs a Discrete Cosine Transform (DCT) on a vector of numbers.
+ * 
+ * Implementation based on the fast DCT algorithm from:
+ * https://www.nayuki.io/page/fast-discrete-cosine-transform-algorithms
+ * 
+ * @param v - Input vector for DCT calculation
+ * @returns Array containing the DCT transformed values
+ * @throws {Error} If input length is invalid (must be power of 2)
+ * @internal
+ */
 export function algDct(v: number[]): number[] {
     /**
      * Discrete cosine transform.

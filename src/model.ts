@@ -1,5 +1,5 @@
-import { decode_header, encode_header, encode_units, decode_units, encode_length, encode_base32, decode_base32, encode_base32hex, decode_length } from './codec';
-import { MT, ST, ST_CC, ST_ISCC, Version, Length, ST_ID } from './constants';
+import { decode_header, encode_header, decode_units, encode_base32, decode_base32, encode_base32hex, decode_length } from './codec';
+import { MT, ST, ST_CC, ST_ISCC, Version, ST_ID } from './constants';
 import { b64EncodeUnicode } from './utils';
 
 /**
