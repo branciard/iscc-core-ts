@@ -34,9 +34,3 @@ The following files need to be placed in the examples/node-example/ directory:
 - ISCC-Logo-Text.png: ISCC logo image for image code testing
 - sample-3s.mp3: 3-second audio sample for audio code testing
 - sample-5s.mp4: 5-second video sample for video code testing
-
-## Common Issues
-
-- Make sure test files are in the correct location (same directory as package.json)
-- Handle all async operations with try/catch
-- Ensure TypeScript is properly configured 

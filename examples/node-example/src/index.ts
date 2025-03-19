@@ -11,7 +11,6 @@ import {
   FrameSig  // Add this type for video frames
 } from 'iscc-core-ts';
 import * as fs from 'fs/promises';
-import * as path from 'path';
 
 async function generateAllCodes() {
   const codes: string[] = [];
