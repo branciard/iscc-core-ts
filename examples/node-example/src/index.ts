@@ -8,12 +8,16 @@ import {
   gen_mixed_code,
   gen_instance_code,
   gen_iscc_code,
-  FrameSig  // Add this type for video frames
+  FrameSig
 } from 'iscc-core-ts';
 import * as fs from 'fs/promises';
 
 async function generateAllCodes() {
-  const codes: string[] = [];
+  // Keep track of codes by type for proper combination
+  const metaCodes: string[] = [];
+  const contentCodes: string[] = [];
+  const dataCodes: string[] = [];
+  const instanceCodes: string[] = [];
 
   try {
     console.log('Testing all ISCC code generation functions:\n');
@@ -24,7 +28,7 @@ async function generateAllCodes() {
       const metaResult = await gen_meta_code(metaTitle);
       console.log('1. Meta Code:', metaResult.iscc);
       console.log('Meta Hash:', metaResult.metahash);
-      codes.push(metaResult.iscc);
+      metaCodes.push(metaResult.iscc);
     } catch (error) {
       console.error('Error generating Meta Code:', error instanceof Error ? error.message : error);
     }
@@ -35,6 +39,7 @@ async function generateAllCodes() {
       const textResult = gen_text_code(text);
       console.log('\n2. Text Code:', textResult.iscc);
       console.log('Text Characters:', textResult.characters);
+      // Don't add to contentCodes - we'll use Image as our content type
     } catch (error) {
       console.error('Error generating Text Code:', error instanceof Error ? error.message : error);
     }
@@ -49,10 +54,7 @@ async function generateAllCodes() {
       const imageResult = await gen_image_code(pixels, 64);
       console.log('Test Image Code:', imageResult.iscc);
       console.log('Code starts with ISCC:EE:', imageResult.iscc.startsWith('ISCC:EE'));
-      codes.push(imageResult.iscc);
-
-      // Remove Text Code from codes array since we can't mix EA and EE types
-      codes.splice(1, 1); // Remove the Text Code we added earlier
+      contentCodes.push(imageResult.iscc); // This will be our content code
       
       // Test 2: ISCC Logo image
       console.log('\nTest 2: ISCC Logo image test');
@@ -126,7 +128,7 @@ async function generateAllCodes() {
       // Generate audio code with 64 bits (default)
       const audioResult = await gen_audio_code(audioArray);
       console.log('Audio Code:', audioResult.iscc);
-      console.log('Code starts with ISCC:EC:', audioResult.iscc.startsWith('ISCC:EC'));
+      // Don't add to contentCodes - we're using Image type
     } catch (error) {
       console.error('Error generating Audio Code:', error instanceof Error ? error.message : error);
       console.error('Stack:', error instanceof Error ? error.stack : '');
@@ -136,47 +138,41 @@ async function generateAllCodes() {
     try {
       console.log('\n5. Video Code test:');
       
-      // Read the video file
-      const videoPath = './sample-5s.mp4';
-      console.log('Reading video file:', videoPath);
-      const videoData = await fs.readFile(videoPath);
+      // Create proper MPEG-7 frame signatures based on test cases
+      const videoFrames: FrameSig[] = [
+        new Array(380).fill(0), // First frame all zeros
+        new Array(380).fill(1), // Second frame all ones
+        new Array(380).fill(2)  // Third frame all twos
+      ];
       
-      // Convert Buffer to array of FrameSig objects
-      const videoFrames: FrameSig[] = Array.from(new Uint8Array(videoData)).map(value => 
-        [value] // Each frame is just a number array
-      );
-      
-      // Generate video code with 64 bits (default)
       const videoResult = await gen_video_code(videoFrames);
       console.log('Video Code:', videoResult.iscc);
-      console.log('Code starts with ISCC:EV:', videoResult.iscc.startsWith('ISCC:EV'));
+      // Don't add to contentCodes - we're using Image type
     } catch (error) {
       console.error('Error generating Video Code:', error instanceof Error ? error.message : error);
-      console.error('Stack:', error instanceof Error ? error.stack : '');
     }
 
     // 6. Mixed Code
     try {
       console.log('\n6. Mixed Code test:');
       
-      // Generate two text codes with same length
+      // Generate two text codes of same type and length per test cases
       const text1 = gen_text_code("Hello World", 64);
-      const text2 = gen_text_code("Short Text-Code", 64);
+      const text2 = gen_text_code("Another Text", 64);
       
-      // Generate mixed code from the two text codes
       const mixedResult = await gen_mixed_code([text1.iscc, text2.iscc]);
       console.log('Mixed Code:', mixedResult.iscc);
       console.log('Parts:', mixedResult.parts);
+      // Don't add to contentCodes - we're using Image type
     } catch (error) {
       console.error('Error generating Mixed Code:', error instanceof Error ? error.message : error);
-      console.error('Stack:', error instanceof Error ? error.stack : '');
     }
 
     // 7. Data Code
     try {
       const dataResult = await gen_data_code(Buffer.from('hello world'));
       console.log('\n7. Data Code:', dataResult.iscc);
-      codes.push(dataResult.iscc);
+      dataCodes.push(dataResult.iscc);
     } catch (error) {
       console.error('Error generating Data Code:', error instanceof Error ? error.message : error);
     }
@@ -187,21 +183,29 @@ async function generateAllCodes() {
       console.log('\n8. Instance Code:', instanceResult.iscc);
       console.log('File Size:', instanceResult.filesize);
       console.log('Data Hash:', instanceResult.datahash);
-      codes.push(instanceResult.iscc);
+      instanceCodes.push(instanceResult.iscc);
     } catch (error) {
       console.error('Error generating Instance Code:', error instanceof Error ? error.message : error);
     }
 
     // 9. ISCC Code
-    if (codes.length > 0) {
-      try {
-        const isccResult = await gen_iscc_code(codes);
+    try {
+      // Combine codes according to ST_ISCC rules
+      const compatibleCodes = [
+        ...metaCodes,      // Meta codes
+        ...contentCodes,   // One content type only (Image in this case)
+        ...dataCodes,      // Data codes
+        ...instanceCodes   // Instance codes
+      ];
+
+      if (compatibleCodes.length >= 2) {
+        const isccResult = await gen_iscc_code(compatibleCodes);
         console.log('\n9. ISCC Code:', isccResult.iscc);
-      } catch (error) {
-        console.error('Error generating ISCC Code:', error instanceof Error ? error.message : error);
+      } else {
+        console.log('\n9. ISCC Code: Not enough compatible codes to generate ISCC');
       }
-    } else {
-      console.log('\n9. ISCC Code: Skipped - No codes were successfully generated');
+    } catch (error) {
+      console.error('Error generating ISCC Code:', error instanceof Error ? error.message : error);
     }
 
   } catch (error) {
