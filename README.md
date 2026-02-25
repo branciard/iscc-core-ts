@@ -17,12 +17,6 @@ ISCCs are generated algorithmically from digital content, just like cryptographi
 
 The component-based structure of the ISCC identifies content at multiple levels of abstraction. Each component is self-describing, modular, and can be used separately or with others to aid in various content identification tasks. The algorithmic design supports content deduplication, database synchronization, indexing, integrity verification, timestamping, versioning, data provenance, similarity clustering, anomaly detection, usage tracking, allocation of royalties, fact-checking and general digital asset management use-cases.
 
-## Development Status
-
-> **Note**: This library is under active development and not ready for production use.
-
-Track development progress at our [project board](https://github.com/users/branciard/projects/1).
-
 
 ### Implementation Status
 
