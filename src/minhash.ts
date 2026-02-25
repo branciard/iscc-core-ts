@@ -145,8 +145,7 @@ export const MAXH = (1n << 32n) - 1n;
  * @param {bigint[]} features - An array of bigint features to be hashed.
  * @returns {bigint[]} A 64-dimensional minhash vector.
  * @throws {Error} If the features array is empty.
- *
- * @description
+*
  * The function works as follows:
  * 1. It checks if the input array is empty and throws an error if so.
  * 2. It initializes a result array of length 64 (same as MPA and MPB).
