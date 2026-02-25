@@ -20,11 +20,7 @@
  * implementation testing.
  */
 
-import * as path from 'path';
-import * as fs from 'fs';
-
-const HERE = path.dirname(__filename);
-const TEST_DATA = path.join(HERE, 'data.json');
+import testData from './data.json';
 
 export interface ConformanceTestEntry {
     test_name: string;
@@ -39,8 +35,8 @@ export interface ConformanceTestEntry {
  * @returns Array of test data entries [test_name, func_name, inputs, outputs]
  */
 export function conformance_testdata(): ConformanceTestEntry[] {
-    const raw = fs.readFileSync(TEST_DATA, 'utf-8');
-    const data: Record<string, Record<string, { inputs: unknown[]; outputs: Record<string, unknown> }>> = JSON.parse(raw);
+    const data = testData as Record<string, Record<string, { inputs: unknown[];
+    outputs: Record<string, unknown> }>>;
 
     const entries: ConformanceTestEntry[] = [];
 
