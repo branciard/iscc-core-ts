@@ -1,0 +1,26 @@
+[tools]
+node = "22"
+
+[tasks.install]
+description = "Install project dependencies"
+run = "npm install"
+
+[tasks.test]
+description = "Run all tests"
+run = "npx jest --config jest.config.cjs --no-coverage"
+
+[tasks.typecheck]
+description = "TypeScript type checking"
+run = "npx tsc --noEmit --pretty"
+
+[tasks.build]
+description = "Build CJS and ESM outputs"
+run = "tsc -b && tsc -p tsconfig-cjs.json"
+
+[tasks.lint]
+description = "Run ESLint"
+run = "npx eslint ./src"
+
+[tasks.format]
+description = "Format code with Prettier"
+run = "npx prettier --config .prettierrc 'src/**/*.ts' --write"

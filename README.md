@@ -37,47 +37,51 @@ Track development progress at our [project board](https://github.com/users/branc
 | gen_data_code_v0 | ✓ Done | 4/4 tests |
 | gen_instance_code_v0 | ✓ Done | 3/3 tests |
 | gen_iscc_code_v0 | ✓ Done | 5/5 tests |
+| gen_iscc_id_v0 | ✓ Done | 15 tests |
+| gen_iscc_id_v1 | ✓ Done | 15 tests |
+| gen_flake_code_v0 | ✓ Done | — |
 
 
-# Prerequiste
+# Prerequisites
 
-We recomand to use [nvm](https://github.com/nvm-sh/nvm) to install and target node and npm versions. [Here](https://www.freecodecamp.org/news/node-version-manager-nvm-install-guide/) an NVM install guide.
+## With mise (recommended)
 
-Nvm version used:
+We recommend [mise](https://mise.jdx.dev/) to manage tool versions. A `mise.toml` is included in the repo.
+
 ```sh
-nvm --version
-0.40.1
+mise install      # installs Node 22 LTS
+mise run install   # npm install
+mise run test      # run all tests
+mise run typecheck # tsc type checking
 ```
-Install node 21 
+
+## Without mise
+
+Install [Node.js](https://nodejs.org/) v22 LTS (or use [nvm](https://github.com/nvm-sh/nvm)):
 
 ```sh
-nvm install --lts
-Installing latest LTS version.
-v22.14.0 is already installed.
-Now using node v22.14.0 (npm v10.9.2)
-
+nvm install 22
+nvm use 22
 ```
 
 # Install and build
 
 ```sh
-npm install -g npm@11.1.0
-npm ci
+npm install
 npm run build
 ```
 
 # Tests
 
 ```sh
-npm run fulltest
+npm run test
 ```
 
-Expected tests result :
+Expected tests result:
 
 ```sh
-
-Test Suites: 16 passed, 16 total
-Tests:       202 passed, 202 total
+Test Suites: 18 passed, 18 total
+Tests:       263 passed, 263 total
 ```
 
 # Documentation
