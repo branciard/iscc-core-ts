@@ -1,12 +1,13 @@
 import {
     decode_header,
     decode_base32,
+    decode_length,
     iscc_clean,
     encode_units,
     encode_base32,
     encode_header_to_uint8Array
 } from './codec';
-import { MT, ST_ISCC, Version, IsccTuple } from './constants';
+import { MT, ST, ST_ISCC, Version, IsccTuple } from './constants';
 
 /**
  * Combine multiple ISCC-UNITs to a composite ISCC-CODE with a common header.
@@ -55,7 +56,7 @@ export function gen_iscc_code(codes: string[]): { iscc: string } {
  * @throws {Error} If input validation fails
  * @internal
  */
-export function gen_iscc_code_v0(codes: string[]): { iscc: string } {
+export function gen_iscc_code_v0(codes: string[], wide = false): { iscc: string } {
     codes = codes.map((code) => iscc_clean(code));
 
     // Check basic constraints
@@ -88,29 +89,48 @@ export function gen_iscc_code_v0(codes: string[]): { iscc: string } {
         );
     }
 
+    // Check if this is a special case of 128-bit Data+Instance composite
+    const is_wide_composite = (
+        wide
+        && codes.length === 2
+        && main_types[0] === MT.DATA && main_types[1] === MT.INSTANCE
+        && decoded.every(t => decode_length(t[0], t[3]) >= 128)
+    );
+
     // Determine SubType (generic mediatype)
-    const sub_types = decoded
-        .filter((t) => t[0] === MT.SEMANTIC || t[0] === MT.CONTENT)
-        .map((t) => t[1]);
+    let st: number;
+    if (is_wide_composite) {
+        st = ST_ISCC.WIDE;
+    } else {
+        const sub_types = decoded
+            .filter((t) => t[0] === MT.SEMANTIC || t[0] === MT.CONTENT)
+            .map((t) => t[1]);
 
-    if (new Set(sub_types).size > 1) {
-        throw new Error(
-            'Semantic-Code and Content-Code must be of same SubType'
-        );
-    }
+        if (new Set(sub_types).size > 1) {
+            throw new Error(
+                'Semantic-Code and Content-Code must be of same SubType'
+            );
+        }
 
-    const st =
-        sub_types.length > 0
+        st = sub_types.length > 0
             ? sub_types[sub_types.length - 1]
             : codes.length === 2
               ? ST_ISCC.SUM
               : ST_ISCC.NONE;
+    }
 
     // Encode unit combination
     const encoded_length = encode_units(main_types.slice(0, -2));
 
-    // Collect and truncate unit digests to 64-bit
-    const digest = concatenateDigests(decoded);
+    // Collect unit digests
+    let digest: Buffer;
+    if (is_wide_composite) {
+        // For wide case, use full 128-bit digests
+        digest = concatenateDigests(decoded, 16);
+    } else {
+        // For standard case, truncate unit digests to 64-bit
+        digest = concatenateDigests(decoded, 8);
+    }
     const header = encode_header_to_uint8Array(
         MT.ISCC,
         st,
@@ -126,22 +146,23 @@ export function gen_iscc_code_v0(codes: string[]): { iscc: string } {
  * Concatenates digest portions of decoded ISCC tuples.
  * 
  * Takes an array of decoded ISCC tuples and concatenates their digest portions,
- * truncating each to 8 bytes to create the composite digest.
+ * truncating each to the specified number of bytes.
  * 
  * @param decoded - Array of decoded ISCC tuples
+ * @param bytesPerDigest - Number of bytes to take from each digest (default: 8)
  * @returns Buffer containing concatenated digests
  * @internal
  */
-function concatenateDigests(decoded: IsccTuple[]): Buffer {
+function concatenateDigests(decoded: IsccTuple[], bytesPerDigest = 8): Buffer {
     // Pre-allocate buffer for all 8-byte chunks
-    const digestLength = decoded.length * 8;
+    const digestLength = decoded.length * bytesPerDigest;
     const result = Buffer.alloc(digestLength);
 
     // Copy each 8-byte chunk to the result buffer
     decoded.forEach((tuple, index) => {
         const digestBytes = tuple[4]; // Get the Uint8Array from the tuple
-        const truncated = digestBytes.subarray(0, 8); // Take first 8 bytes
-        result.set(truncated, index * 8); // Copy to result at correct offset
+        const truncated = digestBytes.subarray(0, bytesPerDigest);
+        result.set(truncated, index * bytesPerDigest);
     });
 
     return result;

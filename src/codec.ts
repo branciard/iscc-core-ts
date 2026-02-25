@@ -12,7 +12,8 @@ import {
     SUBTYPE_MAP,
     ST_CC,
     UNITS,
-    Version
+    Version,
+    SubType,
 } from './constants';
 import { gen_iscc_code_v0 } from './iscc-code';
 
@@ -83,7 +84,7 @@ export function encode_length(mtype: MT, length: number): number {
  * @returns Number of bits
  * @throws Error if length is invalid for the given MainType
  */
-export function decode_length(mtype: MT, length: number): number {
+export function decode_length(mtype: MT, length: number, subtype?: SubType): number {
     if (
         mtype === MT.META ||
         mtype === MT.SEMANTIC ||
@@ -94,6 +95,9 @@ export function decode_length(mtype: MT, length: number): number {
     ) {
         return (length + 1) * 32;
     } else if (mtype === MT.ISCC) {
+        if (subtype === ST_ISCC.WIDE) {
+            return 256; // 128-bit Data + 128-bit Instance
+        }
         return decode_units(length).length * 64 + 128;
     } else if (mtype === MT.ID) {
         return length * 8 + 64;
@@ -113,18 +117,18 @@ export function decode_length(mtype: MT, length: number): number {
  */
 export function encode_header(
     mtype: MT,
-    stype: ST | ST_CC | ST_ISCC ,
+    stype: SubType,
     version: Version,
     length: number
 ): string {
     return toHexString(
-        encode_header_to_uint8Array(mtype, stype as ST_CC | ST_ISCC.SUM | ST_ISCC.NONE | ST.NONE, version, length)
+        encode_header_to_uint8Array(mtype, stype, version, length)
     );
 }
 
 export function encode_header_to_uint8Array(
     mtype: MT,
-    stype: ST_CC | ST_ISCC.SUM | ST_ISCC.NONE | ST.NONE,
+    stype: SubType,
     version: Version,
     length: number
 ): Uint8Array {
@@ -152,7 +156,7 @@ export function encode_header_to_uint8Array(
  */
 export function decode_header(
     data: string
-): [MT, ST_CC | ST.NONE, Version, number, Uint8Array] {
+): [MT, SubType, Version, number, Uint8Array] {
     // Validate input
     if (!data || typeof data !== 'string') {
         throw new Error('Input must be a non-empty string');
@@ -197,7 +201,7 @@ export function decode_header(
 
     return [
         result[0] as MT,
-        result[1] as ST_CC | ST.NONE,
+        result[1],
         result[2] as Version,
         result[3],
         bytes
@@ -277,7 +281,7 @@ export function decode_varnibble(b: string): [number, string] {
  */
 export function encode_component(
     mtype: MT,
-    stype: ST_CC | ST_ISCC.NONE | ST_ISCC.SUM | ST.NONE,
+    stype: SubType,
     version: Version,
     bit_length: number,
     digest: string
@@ -434,10 +438,15 @@ export function iscc_normalize(iscc_code: string): string {
         throw new Error(`ISCC starts with invalid prefix ${prefix}`);
     }
 
+    // Check if this is a WIDE ISCC code
+    const cleaned_code = iscc_clean(iscc_code);
+    const header = decode_header(Buffer.from(decode_base32(cleaned_code)).toString('hex'));
+    const is_wide = header[0] === MT.ISCC && header[1] === ST_ISCC.WIDE;
+
     const decomposed = iscc_decompose(iscc_code);
     const recomposed =
         decomposed.length >= 2
-            ? gen_iscc_code_v0(decomposed).iscc
+            ? gen_iscc_code_v0(decomposed, is_wide).iscc
             : decomposed[0];
 
     return recomposed.startsWith('ISCC:') ? recomposed : `ISCC:${recomposed}`;
@@ -489,11 +498,11 @@ export function iscc_validate(iscc: string, strict = true): boolean {
         return false;
     }
 
-    const [m, , v, l, t] = decode_header(
+    const [m, s, v, l, t] = decode_header(
         Buffer.from(decode_base32(cleaned)).toString('hex')
     );
     // Version test
-    if (v !== 0) {
+    if (v !== 0 && v !== 1) {
         if (strict) {
             throw new Error(`Unknown version ${v} in version header`);
         }
@@ -501,7 +510,7 @@ export function iscc_validate(iscc: string, strict = true): boolean {
     }
 
     // Length test
-    const expected_nbytes = Math.floor(decode_length(m, l) / 8);
+    const expected_nbytes = Math.floor(decode_length(m, l, s) / 8);
     const actual_nbytes = t.length;
     if (expected_nbytes !== actual_nbytes) {
         if (strict) {
@@ -571,6 +580,14 @@ export function iscc_decompose(iscc_code: string): string[] {
         // ISCC-CODE
         const main_types = decode_units(ln);
 
+        // Special case for WIDE subtype (128-bit Data + 128-bit Instance)
+        if (st === ST_ISCC.WIDE) {
+            const data_code = encode_component(MT.DATA, ST.NONE, vs, 128, Buffer.from(body.slice(0, 16)).toString('hex'));
+            const instance_code = encode_component(MT.INSTANCE, ST.NONE, vs, 128, Buffer.from(body.slice(16, 32)).toString('hex'));
+            components.push(data_code, instance_code);
+            break;
+        }
+
         // rebuild dynamic units (META, SEMANTIC, CONTENT)
         for (let idx = 0; idx < main_types.length; idx++) {
             const mtype = main_types[idx];
@@ -615,7 +632,7 @@ export function iscc_decompose(iscc_code: string): string[] {
  */
 export function iscc_decode(
     iscc: string
-): [MT, ST_CC | ST.NONE, Version, number, Uint8Array] {
+): [MT, SubType, Version, number, Uint8Array] {
     const cleaned = iscc_clean(iscc_normalize(iscc));
     const data = decode_base32(cleaned);
     return decode_header(Buffer.from(data).toString('hex'));
@@ -655,7 +672,7 @@ export function iscc_explain(iscc: string): string {
 export function iscc_type_id(iscc: string): string {
     const [mt, st, ver, len] = iscc_decode(iscc);
     const mtype = MT[mt];
-    const stype = SUBTYPE_MAP[mt][st];
+    const stype = SUBTYPE_MAP[`${mt},${ver}`]?.[st] ?? st;
 
     let length: string | number;
     if (mt === MT.ISCC) {
@@ -680,11 +697,22 @@ export function iscc_type_id(iscc: string): string {
 export function encode_units(units: MT[]): number {
     // Sort units to ensure consistent ordering
     const sortedUnits = [...units].sort((a, b) => a - b);
-    return UNITS.findIndex(
+    const idx = UNITS.findIndex(
         (u) =>
             u.length === sortedUnits.length &&
-            u.every((val, idx) => val === sortedUnits[idx])
+            u.every((val, i) => val === sortedUnits[i])
     );
+    if (idx === -1) {
+        // Validate all units are valid MT enum values
+        for (const u of units) {
+            if (!(u in MT)) {
+                throw new Error(`Invalid ISCC-UNIT ${u} - must be of type MT`);
+            }
+        }
+        const unitNames = units.length > 0 ? units.map(u => MT[u]).join(', ') : 'empty';
+        throw new Error(`Invalid ISCC-UNIT combination: ${unitNames}`);
+    }
+    return idx;
 }
 
 /**

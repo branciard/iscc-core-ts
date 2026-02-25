@@ -1,21 +1,21 @@
 import { decode_header, encode_header, decode_units, encode_base32, decode_base32, encode_base32hex, decode_length } from './codec';
-import { MT, ST, ST_CC, ST_ISCC, Version, ST_ID } from './constants';
+import { MT, ST, ST_CC, ST_ISCC, Version, ST_ID, SubType, SUBTYPE_MAP } from './constants';
 import { b64EncodeUnicode } from './utils';
 
 /**
  * Convenience class to handle different representations of an ISCC
  */
 export class Code {
-    private _head: [MT, ST | ST_CC | ST_ISCC, Version, number];
+    private _head: [MT, SubType, Version, number];
     private _body: Uint8Array;
     private static MC_PREFIX = new Uint8Array([0x01, 0x97, 0x01]); // multicodec prefix for ISCC
     
-    constructor(code: string | Buffer | [MT, ST | ST_CC | ST_ISCC, Version, number, Uint8Array] | Code) {
+    constructor(code: string | Buffer | [MT, SubType, Version, number, Uint8Array] | Code) {
         if (code instanceof Code) {
             const codeFields = [...code._head, code.hashBytes];
             this._head = [
                 codeFields[0] as MT,
-                codeFields[1] as ST | ST_CC | ST_ISCC,
+                codeFields[1] as SubType,
                 codeFields[2] as Version,
                 codeFields[3] as number
             ];
@@ -95,9 +95,9 @@ export class Code {
         if (this.maintype === MT.ISCC) {
             const mtypes = decode_units(this._head[3]);
             const length = mtypes.map(t => MT[t][0]).join('') + 'DI';
-            return `${MT[this.maintype]}-${ST[this.subtype]}-${Version[this.version]}-${length}`;
+            return `${MT[this.maintype]}-${SUBTYPE_MAP[`${this.maintype},${this.version}`]?.[this.subtype as number] ?? this.subtype}-${Version[this.version]}-${length}`;
         }
-        return `${MT[this.maintype]}-${ST[this.subtype]}-${Version[this.version]}-${this.length}`;
+        return `${MT[this.maintype]}-${SUBTYPE_MAP[`${this.maintype},${this.version}`]?.[this.subtype as number] ?? this.subtype}-${Version[this.version]}-${this.length}`;
     }
 
     /**
@@ -237,13 +237,8 @@ export class Code {
         return this._head[0];
     }
 
-    get subtype(): ST | ST_CC | ST_ISCC | ST_ID {
-        if (this.maintype === MT.CONTENT || this.maintype === MT.SEMANTIC) {
-            return this._head[1] as ST_CC;
-        } else if (this.maintype === MT.ISCC) {
-            return this._head[1] as ST_ISCC;
-        }
-        return this._head[1] as ST;
+    get subtype(): SubType {
+        return this._head[1];
     }
 
     get version(): Version {
@@ -251,6 +246,10 @@ export class Code {
     }
 
     get length(): number {
+        // Pass subtype as third parameter for MT.ISCC to properly handle WIDE subtype
+        if (this._head[0] === MT.ISCC) {
+            return decode_length(this._head[0], this._head[3], this._head[1]);
+        }
         return decode_length(this._head[0], this._head[3]);
     }
 

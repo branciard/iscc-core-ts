@@ -89,7 +89,8 @@ export enum ST_ISCC {
     VIDEO = 3,
     MIXED = 4,
     SUM = 5,
-    NONE = 6
+    NONE = 6,
+    WIDE = 7
 }
 
 /**
@@ -108,6 +109,21 @@ export enum ST_ID {
     ETHEREUM = 2,
     POLYGON = 3
 }
+
+/**
+ * SubTypes for ID Codes (MT.ID) with Version V1 (Realm IDs)
+ */
+export enum ST_ID_REALM {
+    REALM_0 = 0, // Test HUB network
+    REALM_1 = 1  // First operational realm
+}
+
+/**
+ * Union type for all possible ISCC SubTypes.
+ * Mirrors Python's `SubType = Union[int, 'ST', 'ST_CC', 'ST_ISCC', 'ST_ID']`
+ * Unlike Python, we omit the raw `number` fallback to preserve type safety.
+ */
+export type SubType = ST | ST_CC | ST_ISCC | ST_ID | ST_ID_REALM;
 
 /**
  * ISCC Version numbers
@@ -135,12 +151,15 @@ export enum MULTIBASE {
 export enum Length {
     L32 = 32,
     L64 = 64,
+    L72 = 72,
+    L80 = 80,
     L96 = 96,
     L128 = 128,
     L160 = 160,
     L192 = 192,
     L224 = 224,
-    L256 = 256
+    L256 = 256,
+    L320 = 320
 }
 
 /**
@@ -150,7 +169,7 @@ export const UNITS: ReadonlyArray<ReadonlyArray<MT>> = [
     [],
     [MT.CONTENT],
     [MT.SEMANTIC],
-    [MT.CONTENT, MT.SEMANTIC],
+    [MT.SEMANTIC, MT.CONTENT],
     [MT.META],
     [MT.META, MT.CONTENT],
     [MT.META, MT.SEMANTIC],
@@ -216,7 +235,7 @@ export type CDCGear = typeof CDC_GEAR;
 
 export const IO_READ_SIZE: number = 2097152;
 
-export type IsccTuple = [MT, ST | ST_CC, Version, number, Uint8Array];
+export type IsccTuple = [MT, SubType, Version, number, Uint8Array];
 
 /**
  * Regular expression for validating canonical ISCC codes.
@@ -252,6 +271,7 @@ export const PREFIXES = [
     'KQ',
     'KU',
     'KY',
+    'K4',  // ISCC-WIDE
     'MA',
     'ME',
     'MI',
@@ -287,17 +307,19 @@ export const MC_PREFIX = new Uint8Array([0xcc, 0x01]);
 // Alternative Buffer version if you're using Node.js
 export const MC_PREFIX_BUFFER = Buffer.from([0xcc, 0x01]);
 
-export const SUBTYPE_MAP: Record<
-    MT,
-    typeof ST | typeof ST_ISCC | typeof ST_ID | typeof ST_CC
-> = {
-    [MT.META]: ST,
-    [MT.SEMANTIC]: ST_CC,
-    [MT.CONTENT]: ST_CC,
-    [MT.DATA]: ST,
-    [MT.INSTANCE]: ST,
-    [MT.ISCC]: ST_ISCC,
-    [MT.ID]: ST_ID,
-    [MT.FLAKE]: ST,
-    [MT.TESTMainType8]: ST_CC
+/**
+ * Map (MainType, Version) pairs to SubType enum classes.
+ * Mirrors Python's `SUBTYPE_MAP = {(MT.META, VS.V0): ST, ...}`
+ * Keys are string-encoded `"MT,VS"` pairs for TypeScript compatibility.
+ */
+export const SUBTYPE_MAP: Record<string, typeof ST | typeof ST_ISCC | typeof ST_ID | typeof ST_ID_REALM | typeof ST_CC> = {
+    [`${MT.META},${Version.V0}`]: ST,
+    [`${MT.SEMANTIC},${Version.V0}`]: ST_CC,
+    [`${MT.CONTENT},${Version.V0}`]: ST_CC,
+    [`${MT.DATA},${Version.V0}`]: ST,
+    [`${MT.INSTANCE},${Version.V0}`]: ST,
+    [`${MT.ISCC},${Version.V0}`]: ST_ISCC,
+    [`${MT.ID},${Version.V0}`]: ST_ID,
+    [`${MT.ID},${Version.V1}`]: ST_ID_REALM,
+    [`${MT.FLAKE},${Version.V0}`]: ST,
 };
