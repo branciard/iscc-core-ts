@@ -1,3 +1,4 @@
+import { INSTANCE_BITS } from './constants';
 import { InstanceHasherV0 } from './code-instance-hasher';
 
 /**
@@ -21,7 +22,7 @@ import { InstanceHasherV0 } from './code-instance-hasher';
  */
 export async function gen_instance_code(
     stream: Buffer,
-    bits: number = 64
+    bits: number = INSTANCE_BITS
 ): Promise<{
     iscc: string;
     datahash: string | null;
@@ -40,7 +41,7 @@ export async function gen_instance_code(
  */
 export async function gen_instance_code_v0(
     stream: Buffer,
-    bits: number = 64
+    bits: number = INSTANCE_BITS
 ): Promise<{
     iscc: string;
     datahash: string | null;

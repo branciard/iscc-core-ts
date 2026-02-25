@@ -66,7 +66,7 @@ export function gen_mixed_code_v0(
         MT.CONTENT,
         ST_CC.MIXED,
         Version.V0,
-        bits ? bits : 64,
+        bits ? bits : MIXED_BITS,
         digest
     );
 

@@ -39,3 +39,28 @@ npm start      # node-example
 ## Browser Polyfills
 
 The browser examples (React, Svelte, Vite) use [vite-plugin-node-polyfills](https://github.com/nicolo-ribaudo/vite-plugin-node-polyfills) to provide `buffer`, `crypto`, and `stream` shims that `iscc-core-ts` requires in the browser.
+
+## Configuration via Environment Variables
+
+All ISCC core options are configurable at runtime using `ISCC_CORE_` prefixed environment variables. This follows the same pattern as the Python reference implementation.
+
+```sh
+# Node.js — override via env vars
+ISCC_CORE_META_BITS=128 npm start
+ISCC_CORE_MAX_META_BYTES=5000000 node my-app.js
+
+# Browser — set at build time via Vite define/env
+VITE_ISCC_CORE_META_BITS=128 npm run dev
+```
+
+```typescript
+import { core_opts, conformant_options } from 'iscc-core-ts';
+
+// Read current configuration
+console.log(core_opts.meta_bits);          // 64 (default)
+console.log(core_opts.max_meta_bytes);     // 10000000 (default)
+console.log(core_opts.data_avg_chunk_size); // 1024 (default)
+console.log(conformant_options);            // true if all defaults
+```
+
+See the [Node.js example](./node-example) for a complete demonstration.

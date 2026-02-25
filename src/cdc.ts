@@ -1,4 +1,4 @@
-import { CDC_GEAR_UINT32, IO_READ_SIZE } from './constants';
+import { CDC_GEAR_UINT32, DATA_AVG_CHUNK_SIZE, IO_READ_SIZE } from './constants';
 
 /**
  * A generator that yields data-dependent chunks for the input data.
@@ -24,7 +24,7 @@ import { CDC_GEAR_UINT32, IO_READ_SIZE } from './constants';
 export async function* algCdcChunks(
     data: Buffer,
     utf32: boolean = false,
-    avgChunkSize: number = 1024
+    avgChunkSize: number = DATA_AVG_CHUNK_SIZE
 ): AsyncGenerator<Buffer> {
     // Handle empty input
     if (!data.length) {

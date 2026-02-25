@@ -1,5 +1,5 @@
 import { encode_component } from './codec';
-import { MT, ST_CC, Version } from './constants';
+import { MT, ST_CC, VIDEO_BITS, Version } from './constants';
 import { safeHex } from './utils';
 
 /**
@@ -284,7 +284,7 @@ export const WTA_VIDEO_ID_PERMUTATIONS: [number, number][] = [
  * visual features extracted from video frames.
  * 
  * @param frame_sigs - Array of frame signatures, each signature being an array of numbers
- * @param bits - Optional. The number of bits for the similarity hash. Must be multiple of 64 (default: 64)
+ * @param bits - Optional. The number of bits for the similarity hash. Must be multiple of 64 (default: VIDEO_BITS)
  * @param version - Optional. ISCC version number (currently only 0 is supported)
  * @returns Object containing the ISCC code as a string
  * @throws {Error} If an unsupported version is provided
@@ -326,7 +326,7 @@ export function gen_video_code(
  */
 export function gen_video_code_v0(
     frameSigs: FrameSig[],
-    bits: number = 64
+    bits: number = VIDEO_BITS
 ): { iscc: string } {
     /**
      * Create an ISCC Video-Code with algorithm v0.
@@ -342,7 +342,7 @@ export function gen_video_code_v0(
         MT.CONTENT,
         ST_CC.VIDEO,
         Version.V0,
-        bits ? bits : 64,
+        bits ? bits : VIDEO_BITS,
         safeHex(digest)
     );
 
@@ -373,7 +373,7 @@ export function gen_video_code_v0(
  */
 export function soft_hash_video_v0(
     frameSigs: FrameSig[],
-    bits: number = 64
+    bits: number = VIDEO_BITS
 ): Uint8Array {
     /**
      * Compute video hash v0 from MP7 frame signatures.

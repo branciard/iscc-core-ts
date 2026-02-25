@@ -1,5 +1,5 @@
 import { encode_component } from './codec';
-import { MT, ST_CC, Version } from './constants';
+import { MT, ST_CC, AUDIO_BITS, Version } from './constants';
 import { safeHex } from './utils';
 
 /**
@@ -46,7 +46,7 @@ export function gen_audio_code(
  * Generates a version 0 ISCC Audio Code from a Chromaprint fingerprint.
  * 
  * @param chromaprint - Array of 32-bit signed integers representing the audio fingerprint
- * @param bits - Optional. The number of bits for the similarity hash (default: 64)
+ * @param bits - Optional. The number of bits for the similarity hash (default: AUDIO_BITS)
  * @returns Object containing the ISCC code as a string
  * @internal
  */
@@ -57,13 +57,13 @@ export function gen_audio_code_v0(
     iscc: string;
 } {
     const digest = Buffer.from(
-        soft_hash_audio_v0(chromaprint, bits ? bits : 64)
+        soft_hash_audio_v0(chromaprint, bits ? bits : AUDIO_BITS)
     ).toString('hex');
     const audio_code = encode_component(
         MT.CONTENT,
         ST_CC.AUDIO,
         Version.V0,
-        bits ? bits : 64,
+        bits ? bits : AUDIO_BITS,
         safeHex(digest)
     );
 

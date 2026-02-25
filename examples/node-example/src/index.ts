@@ -8,6 +8,8 @@ import {
   gen_mixed_code,
   gen_instance_code,
   gen_iscc_code,
+  core_opts,
+  conformant_options,
   FrameSig
 } from 'iscc-core-ts';
 import * as fs from 'fs/promises';
@@ -20,6 +22,17 @@ async function generateAllCodes() {
   const instanceCodes: string[] = [];
 
   try {
+    // Show current configuration (can be overridden via ISCC_CORE_* env vars)
+    console.log('=== ISCC Core Configuration ===');
+    console.log('  meta_bits:', core_opts.meta_bits);
+    console.log('  max_meta_bytes:', core_opts.max_meta_bytes);
+    console.log('  data_avg_chunk_size:', core_opts.data_avg_chunk_size);
+    console.log('  conformant:', conformant_options);
+    console.log('');
+    console.log('Tip: Override via environment variables, e.g.:');
+    console.log('  ISCC_CORE_META_BITS=128 npm start');
+    console.log('  ISCC_CORE_MAX_META_BYTES=5000000 npm start');
+    console.log('');
     console.log('Testing all ISCC code generation functions:\n');
 
     // 1. Meta Code

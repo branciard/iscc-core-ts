@@ -1,3 +1,4 @@
+export * from './options';
 export * from './metacode';
 export * from './code-content-text';
 export * from './code-content-image';

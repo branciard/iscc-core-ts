@@ -1,22 +1,39 @@
-/**
- * Default bit lengths for various ISCC code components
- */
-export const METACODE_BITS: number = 64;
-export const TEXT_BITS: number = 64;
-export const IMAGE_BITS: number = 64;
-export const MIXED_BITS: number = 64;
+import { core_opts } from './options';
 
 /**
- * Configuration constants for metadata processing
+ * Default bit lengths for various ISCC code components.
+ * Values are configurable via ISCC_CORE_<NAME> environment variables.
+ * @see {@link core_opts}
  */
-export const META_TRIM_NAME: number = 128;
-export const META_TRIM_DESCRIPTION: number = 4096;
-export const MAX_META_BYTES: number = 10_000_000;
-export const META_NGRAM_SIZE_TEXT: number = 3;
-export const META_NGRAM_SIZE_BYTES: number = 4;
-export const CODE_CONTENT_TEXT_BITS: number = 64;
-export const TEXT_NGRAM_SIZE = 13;
+export const METACODE_BITS: number = core_opts.meta_bits;
+export const TEXT_BITS: number = core_opts.text_bits;
+export const IMAGE_BITS: number = core_opts.image_bits;
+export const AUDIO_BITS: number = core_opts.audio_bits;
+export const VIDEO_BITS: number = core_opts.video_bits;
+export const MIXED_BITS: number = core_opts.mixed_bits;
+export const DATA_BITS: number = core_opts.data_bits;
+export const INSTANCE_BITS: number = core_opts.instance_bits;
+export const FLAKE_BITS: number = core_opts.flake_bits;
 
+/**
+ * Configuration constants for metadata processing.
+ * Values are configurable via ISCC_CORE_<NAME> environment variables.
+ * @see {@link core_opts}
+ */
+export const META_TRIM_NAME: number = core_opts.meta_trim_name;
+export const META_TRIM_DESCRIPTION: number = core_opts.meta_trim_description;
+export const MAX_META_BYTES: number = core_opts.max_meta_bytes;
+export const META_NGRAM_SIZE_TEXT: number = core_opts.meta_ngram_size_text;
+export const META_NGRAM_SIZE_BYTES: number = core_opts.meta_ngram_size_bytes;
+export const TEXT_NGRAM_SIZE: number = core_opts.text_ngram_size;
+
+/**
+ * Content-defined chunking configuration.
+ * Values are configurable via ISCC_CORE_<NAME> environment variables.
+ * @see {@link core_opts}
+ */
+export const DATA_AVG_CHUNK_SIZE: number = core_opts.data_avg_chunk_size;
+export const IO_READ_SIZE: number = core_opts.io_read_size;
 /**
  * Main Types for ISCC codes.
  * 
@@ -235,7 +252,6 @@ export const CDC_GEAR_UINT32 = new Uint32Array(CDC_GEAR);
 // Type for the CDC_GEAR array
 export type CDCGear = typeof CDC_GEAR;
 
-export const IO_READ_SIZE: number = 2097152;
 
 export type IsccTuple = [MT, SubType, Version, number, Uint8Array];
 

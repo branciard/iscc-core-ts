@@ -1,5 +1,5 @@
 import { encode_component } from './codec';
-import { MT, ST, Version } from './constants';
+import { MT, ST, DATA_BITS, Version } from './constants';
 import { algCdcChunks } from './cdc';
 import { algMinhash256 } from './minhash';
 import { xxHash32 } from 'js-xxhash';
@@ -25,7 +25,7 @@ import { xxHash32 } from 'js-xxhash';
  */
 export async function gen_data_code(
     stream: Buffer,
-    bits: number = 64
+    bits: number = DATA_BITS
 ): Promise<{ iscc: string }> {
     return gen_data_code_v0(stream, bits);
 }
@@ -40,7 +40,7 @@ export async function gen_data_code(
  */
 export async function gen_data_code_v0(
     stream: Buffer,
-    bits: number = 64
+    bits: number = DATA_BITS
 ): Promise<{ iscc: string }> {
     const hasher = new DataHasherV0();
     await hasher.push(stream);
@@ -126,7 +126,7 @@ export class DataHasherV0 {
      * @param bits - Optional. The number of bits for the hash (default: 64)
      * @returns String containing the encoded ISCC component
      */
-    code(bits: number = 64): string {
+    code(bits: number = DATA_BITS): string {
         return encode_component(
             MT.DATA,
             ST.NONE,

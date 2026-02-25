@@ -9,7 +9,7 @@
  */
 import * as crypto from 'crypto';
 import { encode_component, toHexString } from './codec';
-import { MT, ST, Version } from './constants';
+import { MT, ST, FLAKE_BITS, Version } from './constants';
 
 /** Module-level counter state for ensuring uniqueness within same millisecond */
 const _COUNTER = new Map<string, bigint>();
@@ -53,7 +53,7 @@ function bytesToBigInt(bytes: Uint8Array): bigint {
  * @param bits - Target bit-length of generated Flake-Code (default: 64)
  * @returns ISCC object with Flake-Code
  */
-export function gen_flake_code(bits: number = 64): { iscc: string } {
+export function gen_flake_code(bits: number = FLAKE_BITS): { iscc: string } {
     return gen_flake_code_v0(bits);
 }
 
@@ -63,7 +63,7 @@ export function gen_flake_code(bits: number = 64): { iscc: string } {
  * @param bits - Target bit-length of generated Flake-Code (default: 64)
  * @returns ISCC object with Flake-Code
  */
-export function gen_flake_code_v0(bits: number = 64): { iscc: string } {
+export function gen_flake_code_v0(bits: number = FLAKE_BITS): { iscc: string } {
     const digest = uid_flake_v0(undefined, bits);
     const flake_code = encode_component(
         MT.FLAKE,
@@ -85,7 +85,7 @@ export function gen_flake_code_v0(bits: number = 64): { iscc: string } {
  */
 export function uid_flake_v0(
     ts?: number | null,
-    bits: number = 64
+    bits: number = FLAKE_BITS
 ): Uint8Array {
     if (bits < 64 || bits > 256) {
         throw new Error(`${bits} bits for flake outside 64 - 256 bits`);
