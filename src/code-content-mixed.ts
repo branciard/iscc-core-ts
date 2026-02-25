@@ -37,10 +37,10 @@ export function gen_mixed_code(
     bits?: number,
     version?: number
 ): { iscc: string; parts: string[] } {
-    if (!version) {
+    if (version === undefined || version === null) {
         version = 0;
     }
-    if (version == 0) {
+    if (version === 0) {
         return gen_mixed_code_v0(codes, bits);
     } else {
         throw new Error('Only ISCC version 0 is supported');

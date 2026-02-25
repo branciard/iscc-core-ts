@@ -10,6 +10,8 @@ export const MIXED_BITS: number = 64;
  * Configuration constants for metadata processing
  */
 export const META_TRIM_NAME: number = 128;
+export const META_TRIM_DESCRIPTION: number = 4096;
+export const MAX_META_BYTES: number = 10_000_000;
 export const META_NGRAM_SIZE_TEXT: number = 3;
 export const META_NGRAM_SIZE_BYTES: number = 4;
 export const CODE_CONTENT_TEXT_BITS: number = 64;

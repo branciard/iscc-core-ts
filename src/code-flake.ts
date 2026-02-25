@@ -112,6 +112,12 @@ export function uid_flake_v0(
     }
     const counterdata = bigIntToBytes(counter, nbytes_rnd);
     _COUNTER.set(timeKey, counter + 1n);
+    // Clean up stale entries to prevent memory leak in long-running processes
+    if (_COUNTER.size > 1) {
+        for (const key of _COUNTER.keys()) {
+            if (key !== timeKey) _COUNTER.delete(key);
+        }
+    }
 
     // Concatenate timedata and counterdata
     const flake_digest = new Uint8Array(timedata.length + counterdata.length);

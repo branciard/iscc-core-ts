@@ -197,7 +197,7 @@ export class Code {
      * Multiformats base64url encoded
      */
     get mfBase64url(): string {
-        return 'u' + b64EncodeUnicode(this.mcBytes.toString());
+        return 'u' + this.mcBytes.toString('base64url');
     }
 
     private decodeUvarint(bytes: Uint8Array): number {

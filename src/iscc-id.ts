@@ -91,7 +91,7 @@ export function gen_iscc_id_v1(
     hub_id = 0,
     realm_id = 0
 ): { iscc: string } {
-    if (timestamp == null) {
+    if (timestamp === undefined || timestamp === null) {
         // Current time in microseconds
         timestamp = Date.now() * 1000;
     }

@@ -306,10 +306,10 @@ export function gen_video_code(
 ): {
     iscc: string;
 } {
-    if (!version) {
+    if (version === undefined || version === null) {
         version = 0;
     }
-    if (version == 0) {
+    if (version === 0) {
         return gen_video_code_v0(frame_sigs, bits);
     } else {
         throw new Error('Only ISCC version 0 is supported');
@@ -382,6 +382,12 @@ export function soft_hash_video_v0(
      * @param bits - Bit-length of resulting Video-Code (multiple of 64)
      */
     const sigs = new Set(frameSigs.map((sig) => sig.toString()));
+    if (frameSigs.length === 0) {
+        throw new Error('At least one frame signature required');
+    }
+    if (frameSigs[0].length < 380) {
+        throw new Error(`Frame signature too short: ${frameSigs[0].length}, need >= 380`);
+    }
     const vecsum = Array(frameSigs[0].length).fill(0);
     sigs.forEach((sigStr) => {
         const sig = sigStr.split(',').map(Number);

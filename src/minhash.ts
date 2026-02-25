@@ -210,29 +210,16 @@ export function algMinhashCompress(
     mhash: bigint[],
     lsb: number = 4
 ): Uint8Array {
-    /**
-     * Compress minhash vector to byte hash-digest.
-     *
-     * Concatenates `lsb` number of least-significant bits from each integer in `mhash`.
-     * For example an `mhash` with 64 integers and `lsb=4` will produce a 256-bit summary
-     * of the minhash vector.
-     *
-     * @param mhash - List of minhash integer features
-     * @param lsb - Number of the least significant bits to retain
-     * @returns 256-bit binary from the least significant bits of the minhash values
-     */
-    let bits: string = '';
+    const totalBits = lsb * mhash.length;
+    const result = new Uint8Array(Math.ceil(totalBits / 8));
+    let bitIdx = 0;
     for (let bitpos = 0; bitpos < lsb; bitpos++) {
         for (const h of mhash) {
-            bits += ((h >> BigInt(bitpos)) & 1n).toString();
+            if ((h >> BigInt(bitpos)) & 1n) {
+                result[bitIdx >> 3] |= (1 << (7 - (bitIdx & 7)));
+            }
+            bitIdx++;
         }
     }
-
-    const byteLength = Math.ceil(bits.length / 8);
-    const result = new Uint8Array(byteLength);
-    for (let i = 0; i < byteLength; i++) {
-        result[i] = parseInt(bits.slice(i * 8, (i + 1) * 8), 2);
-    }
-
     return result;
 }

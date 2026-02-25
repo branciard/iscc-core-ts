@@ -30,6 +30,10 @@ export const chunkString = (
     str: string,
     length: number
 ): RegExpMatchArray | null => {
+    // CLN-003: Validate length parameter
+    if (!Number.isInteger(length) || length <= 0) {
+        throw new Error(`chunkString length must be a positive integer, got ${length}`);
+    }
     return str.match(new RegExp('.{1,' + length + '}', 'g'));
 };
 
@@ -46,15 +50,27 @@ export function interleave(
     return newArr;
 }
 
-export function isJson(item: string | object) {
+export function isJson(item: string | object): boolean {
     let value = typeof item !== 'string' ? JSON.stringify(item) : item;
     try {
+        // CLN-004: Use safe JSON parsing to prevent prototype pollution
         value = JSON.parse(value);
     } catch {
         return false;
     }
 
-    return typeof value === 'object' && value !== null;
+    if (typeof value !== 'object' || value === null) {
+        return false;
+    }
+
+    // Reject objects with prototype pollution keys
+    if (Object.prototype.hasOwnProperty.call(value, '__proto__') ||
+        Object.prototype.hasOwnProperty.call(value, 'constructor') ||
+        Object.prototype.hasOwnProperty.call(value, 'prototype')) {
+        return false;
+    }
+
+    return true;
 }
 
 /**
@@ -73,30 +89,13 @@ export function b64DecodeUnicode(str: string): string {
 
 export function binaryArrayToUint8Array(binArray: string): Uint8Array {
     //# Append zero-padding if required (right side, least-significant bits).
-    let toPad: number = 8;
-    for (let i = 0; i < binArray.length; i++) {
-        toPad--;
-        if (toPad == 0) {
-            toPad = 8;
-        }
+    const padLen = (8 - (binArray.length % 8)) % 8;
+    if (padLen > 0) {
+        binArray = binArray.padEnd(binArray.length + padLen, '0');
     }
-    if (toPad < 8) {
-        binArray = binArray.padEnd(binArray.length + toPad, '0');
-    }
-
-    const byte = new Array<string>();
-    let idxInByte = 0;
-    const uint8Array = new Uint8Array(Math.floor(binArray.length / 8));
-    let idxUint8Array = 0;
-    for (let i = 0; i < binArray.length; i++) {
-        byte.push(binArray[i]);
-        idxInByte++;
-        if (idxInByte == 8) {
-            idxInByte = 0;
-            uint8Array[idxUint8Array] = parseInt(byte.join(''), 2);
-            idxUint8Array++;
-            byte.splice(0, 8);
-        }
+    const uint8Array = new Uint8Array(binArray.length / 8);
+    for (let i = 0; i < uint8Array.length; i++) {
+        uint8Array[i] = parseInt(binArray.slice(i * 8, i * 8 + 8), 2);
     }
     return uint8Array;
 }
@@ -356,9 +355,13 @@ export function json_canonical(obj: unknown): Uint8Array {
         JSON.parse(ser),
         Object.keys(JSON.parse(ser)).sort(),
     );
-    // Simple round-trip check
+    // Round-trip check: re-canonicalize the deserialized result (order-independent)
     const des = JSON.parse(canonical);
-    if (JSON.stringify(des) !== JSON.stringify(obj)) {
+    const recanonical = JSON.stringify(
+        des,
+        Object.keys(des).sort(),
+    );
+    if (recanonical !== canonical) {
         throw new Error(`Not canonicalizable: round-trip mismatch`);
     }
     return new TextEncoder().encode(canonical);

@@ -24,15 +24,7 @@ import { gen_iscc_code_v0 } from './iscc-code';
  * @returns Hexadecimal string representation
  */
 export function toHexString(bytes: Uint8Array): string {
-    let result = '';
-    for (const byte of bytes) {
-        if (byte > 15) {
-            result += (byte & 0xff).toString(16);
-        } else {
-            result += '0' + (byte & 0xff).toString(16);
-        }
-    }
-    return result;
+    return Buffer.from(bytes).toString('hex');
 }
 
 /**
@@ -47,25 +39,25 @@ export function encode_length(mtype: MT, length: number): number {
     const error =
         'Invalid length [' + length + '] for MainType [' + mtype + ']';
     if (
-        mtype == MT.META ||
-        mtype == MT.SEMANTIC ||
-        mtype == MT.CONTENT ||
-        mtype == MT.DATA ||
-        mtype == MT.INSTANCE ||
-        mtype == MT.FLAKE
+        mtype === MT.META ||
+        mtype === MT.SEMANTIC ||
+        mtype === MT.CONTENT ||
+        mtype === MT.DATA ||
+        mtype === MT.INSTANCE ||
+        mtype === MT.FLAKE
     ) {
-        if (length >= 32 && length % 32 == 0) {
+        if (length >= 32 && length % 32 === 0) {
             return Math.floor(length / 32) - 1;
         } else {
             throw Error(error);
         }
-    } else if (mtype == MT.ISCC) {
+    } else if (mtype === MT.ISCC) {
         if (0 <= length && length <= 7) {
             return length;
         } else {
             throw Error(error);
         }
-    } else if (mtype == MT.ID) {
+    } else if (mtype === MT.ID) {
         if (64 <= length && length <= 96) {
             return Math.floor((length - 64) / 8);
         } else {
@@ -287,13 +279,13 @@ export function encode_component(
     digest: string
 ): string {
     if (
-        mtype == MT.META ||
-        mtype == MT.SEMANTIC ||
-        mtype == MT.CONTENT ||
-        mtype == MT.DATA ||
-        mtype == MT.INSTANCE ||
-        mtype == MT.ID ||
-        mtype == MT.FLAKE
+        mtype === MT.META ||
+        mtype === MT.SEMANTIC ||
+        mtype === MT.CONTENT ||
+        mtype === MT.DATA ||
+        mtype === MT.INSTANCE ||
+        mtype === MT.ID ||
+        mtype === MT.FLAKE
     ) {
         const encoded_length: number = encode_length(mtype, bit_length);
         const nbytes = Math.floor(bit_length / 8);
@@ -301,7 +293,7 @@ export function encode_component(
         const body = digest.substring(0, nbytes * 2);
         const component_code = encode_base32(header + body);
         return component_code;
-    } else if (mtype == MT.ISCC) {
+    } else if (mtype === MT.ISCC) {
         throw Error('{mtype} ISCC is not a unit');
     } else {
         throw Error('Illegal MainType');
@@ -434,7 +426,7 @@ export function iscc_normalize(iscc_code: string): string {
 
     // Validate prefix
     const prefix = iscc_code.toUpperCase().slice(0, 2);
-    if (!PREFIXES.includes(prefix as any)) {
+    if (!(PREFIXES as readonly string[]).includes(prefix)) {
         throw new Error(`ISCC starts with invalid prefix ${prefix}`);
     }
 
@@ -481,7 +473,7 @@ export function iscc_validate(iscc: string, strict = true): boolean {
 
     // Prefix test
     const prefix: string = cleaned.slice(0, 2);
-    if (!PREFIXES.includes(prefix as any)) {
+    if (!(PREFIXES as readonly string[]).includes(prefix)) {
         if (strict) {
             throw new Error(`Header starts with invalid sequence ${prefix}`);
         }

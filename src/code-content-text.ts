@@ -35,10 +35,10 @@ export function gen_text_code(
     iscc: string;
     characters: number;
 } {
-    if (!version) {
+    if (version === undefined || version === null) {
         version = 0;
     }
-    if (version == 0) {
+    if (version === 0) {
         return gen_text_code_v0(text, bits);
     } else {
         throw new Error('Only ISCC version 0 is supported');

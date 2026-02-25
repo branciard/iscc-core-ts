@@ -32,10 +32,10 @@ export function gen_audio_code(
 ): {
     iscc: string;
 } {
-    if (!version) {
+    if (version === undefined || version === null) {
         version = 0;
     }
-    if (version == 0) {
+    if (version === 0) {
         return gen_audio_code_v0(chromaprint, bits);
     } else {
         throw new Error('Only ISCC version 0 is supported');

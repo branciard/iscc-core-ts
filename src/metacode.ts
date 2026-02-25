@@ -22,6 +22,8 @@ import {
     META_NGRAM_SIZE_BYTES,
     META_NGRAM_SIZE_TEXT,
     META_TRIM_NAME,
+    META_TRIM_DESCRIPTION,
+    MAX_META_BYTES,
     MT,
     Version,
     ST
@@ -66,10 +68,10 @@ export async function gen_meta_code(
     meta?: string;
     version: number;
 }> {
-    if (!version) {
+    if (version === undefined || version === null) {
         version = 0;
     }
-    if (version == 0) {
+    if (version === 0) {
         return await gen_meta_code_v0(name, description, meta, bits);
     } else {
         throw new Error('Only ISCC version 0 is supported');
@@ -100,8 +102,9 @@ export async function gen_meta_code_v0(
     meta?: string;
     version: number;
 }> {
-    let nameResult: string = '';
-    nameResult = text_clean(name);
+    // CLN-005: Pre-truncate name before expensive text_clean to prevent resource exhaustion
+    let nameResult: string = text_trim(name, META_TRIM_NAME * 10);
+    nameResult = text_clean(nameResult);
     nameResult = text_remove_newlines(nameResult);
     nameResult = text_trim(nameResult, META_TRIM_NAME);
 
@@ -111,14 +114,19 @@ export async function gen_meta_code_v0(
         );
     }
 
-    let descriptionResult: string = description ? text_clean(description) : '';
+    // CLN-006: Pre-truncate description and apply byte limit matching Python's meta_trim_description
+    let descriptionResult: string = description ? text_trim(description, META_TRIM_DESCRIPTION * 10) : '';
     descriptionResult = text_clean(descriptionResult);
-    descriptionResult = text_trim(descriptionResult);
+    descriptionResult = text_trim(descriptionResult, META_TRIM_DESCRIPTION);
 
     let meta_code_digest = undefined;
     let metahash = undefined;
     let metadata_value = undefined;
     if (meta) {
+        // CLN-007: Validate meta input size to prevent resource exhaustion
+        if (meta.length > MAX_META_BYTES) {
+            throw new Error(`Meta input size ${meta.length} exceeds maximum of ${MAX_META_BYTES} bytes`);
+        }
         if (meta.includes('data:')) {
             // Data-URL expected
             const durl = meta;
@@ -224,7 +232,7 @@ export async function soft_hash_meta_v0(
 
     let simhash_digest = alg_simhash(name_hash_digests);
 
-    if (extra == undefined || (extra != undefined && extra.length === 0)) {
+    if (extra === undefined || (extra !== undefined && extra.length === 0)) {
         return simhash_digest;
     } else {
         let extra_hash_digests = undefined;
@@ -246,7 +254,7 @@ export async function soft_hash_meta_v0(
                 })
             );
         }
-        if (extra_hash_digests != undefined) {
+        if (extra_hash_digests !== undefined) {
             const extra_simhash_digest = alg_simhash(extra_hash_digests);
             // Interleave first half of name and extra simhashes in 32-bit chunks
             const chunks_simhash_digest = chunkString(

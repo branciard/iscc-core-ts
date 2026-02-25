@@ -28,10 +28,10 @@ export function gen_image_code(
 ): {
     iscc: string;
 } {
-    if (!version) {
+    if (version === undefined || version === null) {
         version = 0;
     }
-    if (version == 0) {
+    if (version === 0) {
         return gen_image_code_v0(pixels, bits);
     } else {
         throw new Error('Only ISCC version 0 is supported');

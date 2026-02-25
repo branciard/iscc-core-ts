@@ -72,13 +72,9 @@ export function text_remove_newlines(text: string): string {
  * @returns True if character is in Control category
  * @internal
  */
+const CC_REGEX = XRegExp('^\\p{Control}+$');
 function isCharControlCategoryUnicode(s: string) {
-    const cc = XRegExp('^\\p{Control}+$');
-    if (cc.test(s)) {
-        return true;
-    } else {
-        return false;
-    }
+    return CC_REGEX.test(s);
 }
 
 /**
@@ -89,12 +85,7 @@ function isCharControlCategoryUnicode(s: string) {
  * @internal
  */
 function isCharNewLinesUnicode(s: string) {
-    const regex = LINE_ENDING_REGEX
-    if (regex.test(s)) {
-        return true;
-    } else {
-        return false;
-    }
+    return LINE_ENDING_REGEX.test(s);
 }
 /**
  *
@@ -126,31 +117,32 @@ function isCharNewLinesUnicode(s: string) {
  */
 export function text_clean(text: string): string {
     text = text.normalize('NFKC');
-    let textWithoutCC = '';
+    const partsCC: string[] = [];
     const charsWithCC = Array.from(text);
     // Remove control characters
     for (const c of charsWithCC) {
         if (!isCharControlCategoryUnicode(c) || isCharNewLinesUnicode(c)) {
-            textWithoutCC = textWithoutCC.concat(c);
+            partsCC.push(c);
         }
     }
+    const textWithoutCC = partsCC.join('');
 
-    let textFiltered = '';
+    const partsFiltered: string[] = [];
     const chars = Array.from(textWithoutCC);
     let newline_count: number = 0;
     for (const c of chars) {
         if (isCharNewLinesUnicode(c)) {
             if (newline_count < 2) {
-                textFiltered = textFiltered.concat('\u{000A}');
+                partsFiltered.push('\u000A');
                 newline_count += 1;
             }
             continue;
         } else {
             newline_count = 0;
         }
-        textFiltered = textFiltered.concat(c);
+        partsFiltered.push(c);
     }
-    text = textFiltered;
+    text = partsFiltered.join('');
     return text.trim();
 }
 
