@@ -1,0 +1,85 @@
+/* === Google Fonts === */
+@import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* === ISCC Brand Variables === */
+:root {
+  /* Primary */
+  --iscc-blue: #0054b2;
+  --deep-navy: #123663;
+  --bright-yellow: #ffc300;
+  --coral-red: #f56169;
+  --lime-green: #a6db50;
+
+  /* Extended Blues */
+  --sky-blue: #4596f5;
+  --light-cyan: #7ac2f7;
+
+  /* Neutrals */
+  --white: #ffffff;
+  --off-white: #f8f9fa;
+  --light-gray: #e9ecef;
+  --medium-gray: #6c757d;
+  --dark-gray: #343a40;
+  --near-black: #212529;
+
+  /* ISCC Component Colors */
+  --color-meta: #4596f5;
+  --color-semantic: #6c757d;
+  --color-content: #0054b2;
+  --color-data: #7ac2f7;
+  --color-instance: #123663;
+  --color-iscc-code: #ffc300;
+  --color-flake: #a6db50;
+  --color-iscc-id: #f56169;
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --header-height: 56px;
+
+  /* Typography */
+  --font-body: 'Readex Pro', Arial, sans-serif;
+  --font-code: 'JetBrains Mono', Consolas, monospace;
+}
+
+/* === Reset === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--dark-gray);
+  background: var(--off-white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code, pre, .mono {
+  font-family: var(--font-code);
+}
+
+a {
+  color: var(--iscc-blue);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: var(--font-body);
+}

@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/assets/iscc-logo-icon-black.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ISCC Core TS — Vanilla Vite Demo</title>
+  </head>
+  <body>
+    <div class="app-layout">
+      <!-- Header -->
+      <header class="app-header">
+        <img src="/assets/iscc-logo-icon-black.svg" alt="ISCC" />
+        <h1>ISCC Core TS</h1>
+        <span class="version">v0.3.0 — Interactive Demo</span>
+      </header>
+
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-label">Content Codes</div>
+          <button class="sidebar-item active" data-target="meta">
+            <span class="sidebar-dot" style="background: var(--color-meta)"></span>
+            Meta-Code
+          </button>
+          <button class="sidebar-item" data-target="text">
+            <span class="sidebar-dot" style="background: var(--color-content)"></span>
+            Text-Code
+          </button>
+          <button class="sidebar-item" data-target="image">
+            <span class="sidebar-dot" style="background: var(--color-content)"></span>
+            Image-Code
+          </button>
+          <button class="sidebar-item" data-target="audio">
+            <span class="sidebar-dot" style="background: var(--color-content)"></span>
+            Audio-Code
+          </button>
+          <button class="sidebar-item" data-target="video">
+            <span class="sidebar-dot" style="background: var(--color-content)"></span>
+            Video-Code
+          </button>
+          <button class="sidebar-item" data-target="mixed">
+            <span class="sidebar-dot" style="background: var(--color-content)"></span>
+            Mixed-Code
+          </button>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-label">Data &amp; Instance</div>
+          <button class="sidebar-item" data-target="data">
+            <span class="sidebar-dot" style="background: var(--color-data)"></span>
+            Data-Code
+          </button>
+          <button class="sidebar-item" data-target="instance">
+            <span class="sidebar-dot" style="background: var(--color-instance)"></span>
+            Instance-Code
+          </button>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-label">Composite</div>
+          <button class="sidebar-item" data-target="iscc-code">
+            <span class="sidebar-dot" style="background: var(--color-iscc-code)"></span>
+            ISCC-CODE
+          </button>
+          <button class="sidebar-item" data-target="flake">
+            <span class="sidebar-dot" style="background: var(--color-flake)"></span>
+            Flake-Code
+          </button>
+          <button class="sidebar-item" data-target="iscc-id">
+            <span class="sidebar-dot" style="background: var(--color-iscc-id)"></span>
+            ISCC-ID
+          </button>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-label">Utilities</div>
+          <button class="sidebar-item" data-target="codec">
+            <span class="sidebar-dot" style="background: var(--medium-gray)"></span>
+            Codec Utils
+          </button>
+          <button class="sidebar-item" data-target="inspector">
+            <span class="sidebar-dot" style="background: var(--deep-navy)"></span>
+            Code Inspector
+          </button>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+
+        <!-- 1. Meta-Code -->
+        <div id="meta" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-meta)"></span>
+            <h2>Meta-Code</h2>
+          </div>
+          <p class="section-desc">
+            Generates a similarity-preserving hash from metadata (title, description).
+            Useful for identifying content by its descriptive metadata.
+          </p>
+          <form id="meta-form">
+            <div class="form-group">
+              <label for="meta-title">Title</label>
+              <input id="meta-title" class="form-input" value="ISCC Demo Document" placeholder="Enter title..." />
+            </div>
+            <div class="form-group">
+              <label for="meta-desc">Description (optional)</label>
+              <textarea id="meta-desc" class="form-textarea" rows="3" placeholder="Enter description...">A sample document for testing the ISCC Meta-Code generation.</textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="meta-bits">Bits</label>
+                <select id="meta-bits" class="form-select">
+                  <option value="64" selected>64</option>
+                  <option value="128">128</option>
+                  <option value="256">256</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate Meta-Code</button>
+              </div>
+            </div>
+          </form>
+          <div id="meta-result"></div>
+        </div>
+
+        <!-- 2. Text-Code -->
+        <div id="text" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-content)"></span>
+            <h2>Content-Code Text</h2>
+          </div>
+          <p class="section-desc">
+            Generates a similarity hash from text content using character-level n-gram shingling and MinHash.
+            Similar texts produce similar codes.
+          </p>
+          <form id="text-form">
+            <div class="form-group">
+              <label for="text-content">Text Content</label>
+              <textarea id="text-content" class="form-textarea" rows="5" placeholder="Enter text...">The quick brown fox jumps over the lazy dog. This is a sample text for demonstrating the ISCC Content-Code Text generation algorithm which uses MinHash for similarity hashing.</textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="text-bits">Bits</label>
+                <select id="text-bits" class="form-select">
+                  <option value="64" selected>64</option>
+                  <option value="128">128</option>
+                  <option value="256">256</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate Text-Code</button>
+              </div>
+            </div>
+          </form>
+          <div id="text-result"></div>
+        </div>
+
+        <!-- 3. Image-Code -->
+        <div id="image" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-content)"></span>
+            <h2>Content-Code Image</h2>
+          </div>
+          <p class="section-desc">
+            Generates a perceptual hash from 1024 normalized grayscale pixel values (32×32) using DCT.
+            Visually similar images produce similar codes.
+          </p>
+          <form id="image-form">
+            <div class="form-group">
+              <label for="image-pixels">Pixel Values (1024 comma-separated grayscale values, 0–255)</label>
+              <textarea id="image-pixels" class="form-textarea" rows="4" placeholder="Pixel values..."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="image-bits">Bits</label>
+                <select id="image-bits" class="form-select">
+                  <option value="64" selected>64</option>
+                  <option value="128">128</option>
+                  <option value="256">256</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate Image-Code</button>
+              </div>
+            </div>
+          </form>
+          <div id="image-result"></div>
+        </div>
+
+        <!-- 4. Audio-Code -->
+        <div id="audio" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-content)"></span>
+            <h2>Content-Code Audio</h2>
+          </div>
+          <p class="section-desc">
+            Generates a similarity hash from a Chromaprint audio fingerprint (array of signed 32-bit integers).
+            Use <code>fpcalc -raw -json -signed -length 0</code> to extract fingerprints.
+          </p>
+          <form id="audio-form">
+            <div class="form-group">
+              <label for="audio-fp">Chromaprint Fingerprint (comma-separated signed 32-bit integers)</label>
+              <textarea id="audio-fp" class="form-textarea" rows="5" placeholder="Chromaprint values..."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="audio-bits">Bits</label>
+                <select id="audio-bits" class="form-select">
+                  <option value="64" selected>64</option>
+                  <option value="128">128</option>
+                  <option value="256">256</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate Audio-Code</button>
+              </div>
+            </div>
+          </form>
+          <div id="audio-result"></div>
+        </div>
+
+        <!-- 5. Video-Code -->
+        <div id="video" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-content)"></span>
+            <h2>Content-Code Video</h2>
+          </div>
+          <p class="section-desc">
+            Generates a similarity hash from video frame signatures. Each frame is an array of 380 feature values.
+            Uses WTA (Winner-Take-All) hashing for perceptual video fingerprinting.
+          </p>
+          <form id="video-form">
+            <div class="form-group">
+              <label for="video-frames">Frame Signatures (JSON array of arrays, each with 380 integer values)</label>
+              <textarea id="video-frames" class="form-textarea" rows="5" placeholder="[[...], [...], ...]"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="video-bits">Bits</label>
+                <select id="video-bits" class="form-select">
+                  <option value="64" selected>64</option>
+                  <option value="128">128</option>
+                  <option value="256">256</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate Video-Code</button>
+              </div>
+            </div>
+          </form>
+          <div id="video-result"></div>
+        </div>
+
+        <!-- 6. Mixed-Code -->
+        <div id="mixed" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-content)"></span>
+            <h2>Content-Code Mixed</h2>
+          </div>
+          <p class="section-desc">
+            Combines multiple Content-Codes into a single Mixed-Code using SimHash.
+            Useful when content has multiple media types (e.g., text + images).
+          </p>
+          <form id="mixed-form">
+            <div class="form-group">
+              <label for="mixed-codes">ISCC Content-Codes (one per line)</label>
+              <textarea id="mixed-codes" class="form-textarea" rows="4" placeholder="ISCC:EAAS...">ISCC:EAASKDNZNYGUUF5A
+ISCC:EAAS2QPBFTG7HLUQ</textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="mixed-bits">Bits</label>
+                <select id="mixed-bits" class="form-select">
+                  <option value="64" selected>64</option>
+                  <option value="128">128</option>
+                  <option value="256">256</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate Mixed-Code</button>
+              </div>
+            </div>
+          </form>
+          <div id="mixed-result"></div>
+        </div>
+
+        <!-- 7. Data-Code -->
+        <div id="data" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-data)"></span>
+            <h2>Data-Code</h2>
+          </div>
+          <p class="section-desc">
+            Generates a similarity hash from binary data using Content-Defined Chunking (CDC) and MinHash.
+            Identifies similar binary data streams regardless of format.
+          </p>
+          <form id="data-form">
+            <div class="form-group">
+              <label for="data-content">Data (text will be UTF-8 encoded)</label>
+              <textarea id="data-content" class="form-textarea" rows="5" placeholder="Enter data...">Hello World! This is sample data for the ISCC Data-Code generation. The Data-Code uses Content-Defined Chunking and MinHash for similarity hashing of binary data streams.</textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="data-bits">Bits</label>
+                <select id="data-bits" class="form-select">
+                  <option value="64" selected>64</option>
+                  <option value="128">128</option>
+                  <option value="256">256</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate Data-Code</button>
+              </div>
+            </div>
+          </form>
+          <div id="data-result"></div>
+        </div>
+
+        <!-- 8. Instance-Code -->
+        <div id="instance" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-instance)"></span>
+            <h2>Instance-Code</h2>
+          </div>
+          <p class="section-desc">
+            Generates a cryptographic hash (BLAKE3) for exact binary content identification.
+            Also provides a datahash (multihash) and filesize.
+          </p>
+          <form id="instance-form">
+            <div class="form-group">
+              <label for="instance-content">Data (text will be UTF-8 encoded)</label>
+              <textarea id="instance-content" class="form-textarea" rows="4" placeholder="Enter data...">Hello World! This is sample data for the ISCC Instance-Code.</textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="instance-bits">Bits</label>
+                <select id="instance-bits" class="form-select">
+                  <option value="64" selected>64</option>
+                  <option value="128">128</option>
+                  <option value="256">256</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate Instance-Code</button>
+              </div>
+            </div>
+          </form>
+          <div id="instance-result"></div>
+        </div>
+
+        <!-- 9. ISCC-CODE -->
+        <div id="iscc-code" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-iscc-code)"></span>
+            <h2>ISCC-CODE</h2>
+          </div>
+          <p class="section-desc">
+            Combines multiple ISCC-UNITs (Meta, Content, Data, Instance) into a single composite ISCC-CODE
+            with a common header. This is the full ISCC identifier for a digital asset.
+          </p>
+          <form id="iscc-code-form">
+            <div class="form-group">
+              <label for="iscc-code-units">ISCC Units (one per line: Meta, Content, Data, Instance)</label>
+              <textarea id="iscc-code-units" class="form-textarea" rows="5" placeholder="ISCC:AAAW...&#10;ISCC:EAAS...&#10;ISCC:GAAW...&#10;ISCC:IAAW...">ISCC:AAAWN3GVSSQLNPE4
+ISCC:EAASKDNZNYGUUF5A
+ISCC:GAAW2PRCRS5LNVZK
+ISCC:IAAW7EDERHK3SFHH</textarea>
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">Generate ISCC-CODE</button>
+            </div>
+          </form>
+          <div id="iscc-code-result"></div>
+        </div>
+
+        <!-- 10. Flake-Code -->
+        <div id="flake" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-flake)"></span>
+            <h2>Flake-Code</h2>
+          </div>
+          <p class="section-desc">
+            Generates a unique, time-sorted identifier (48-bit timestamp + 16-bit randomness).
+            Useful as a database surrogate key. Each click generates a new unique flake.
+          </p>
+          <form id="flake-form">
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">Generate Flake-Code</button>
+            </div>
+          </form>
+          <div id="flake-result"></div>
+        </div>
+
+        <!-- 11. ISCC-ID -->
+        <div id="iscc-id" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--color-iscc-id)"></span>
+            <h2>ISCC-ID</h2>
+          </div>
+          <p class="section-desc">
+            Generates a globally unique, owned identifier based on a timestamp and HUB-ID.
+            The 52-bit UTC timestamp + 12-bit HUB-ID ensures uniqueness across distributed systems.
+          </p>
+          <form id="iscc-id-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="iscc-id-hub">HUB ID (0–4095)</label>
+                <input id="iscc-id-hub" class="form-input" type="number" min="0" max="4095" value="42" />
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Generate ISCC-ID</button>
+              </div>
+            </div>
+          </form>
+          <div id="iscc-id-result"></div>
+        </div>
+
+        <!-- 12. Codec Utils -->
+        <div id="codec" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--medium-gray)"></span>
+            <h2>Codec Utilities</h2>
+          </div>
+          <p class="section-desc">
+            Low-level codec functions for explaining, validating, comparing, encoding/decoding, and decomposing ISCC codes.
+          </p>
+
+          <!-- Explain -->
+          <h3 class="subsection-title">iscc_explain</h3>
+          <form id="explain-form">
+            <div class="form-row">
+              <div class="form-group">
+                <input id="explain-input" class="form-input" value="ISCC:KACYPXW445FTYNJ3CYSXHAFJMA2HUWULUNRFE3BLHRSCXYH2M5AEGQY" placeholder="ISCC:..." />
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Explain</button>
+              </div>
+            </div>
+          </form>
+          <div id="explain-result"></div>
+
+          <!-- Validate -->
+          <h3 class="subsection-title">iscc_validate</h3>
+          <form id="validate-form">
+            <div class="form-row">
+              <div class="form-group">
+                <input id="validate-input" class="form-input" value="ISCC:KACYPXW445FTYNJ3CYSXHAFJMA2HUWULUNRFE3BLHRSCXYH2M5AEGQY" placeholder="ISCC:..." />
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Validate</button>
+              </div>
+            </div>
+          </form>
+          <div id="validate-result"></div>
+
+          <!-- Similarity / Distance -->
+          <h3 class="subsection-title">iscc_similarity / iscc_distance</h3>
+          <form id="similarity-form">
+            <div class="form-group">
+              <label for="sim-a">ISCC Code A</label>
+              <input id="sim-a" class="form-input" value="ISCC:EAAWVMZ5AQ2IOA43" />
+            </div>
+            <div class="form-group">
+              <label for="sim-b">ISCC Code B</label>
+              <input id="sim-b" class="form-input" value="ISCC:EAAXNOS5MCRYKEPL" />
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">Compare</button>
+            </div>
+          </form>
+          <div id="similarity-result"></div>
+
+          <!-- Base32 Encode/Decode -->
+          <h3 class="subsection-title">encode_base32 / decode_base32</h3>
+          <form id="encode-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="hex-input">Hex → Base32</label>
+                <input id="hex-input" class="form-input" value="cc01f6728a8fa89e" placeholder="hex..." />
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Encode</button>
+              </div>
+            </div>
+          </form>
+          <div id="encode-result"></div>
+
+          <form id="decode-form" style="margin-top: 0.75rem;">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="b32-input">Base32 → Hex</label>
+                <input id="b32-input" class="form-input" value="ZQA7M4UKR6UJ4" placeholder="base32..." />
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Decode</button>
+              </div>
+            </div>
+          </form>
+          <div id="decode-result"></div>
+
+          <!-- Decompose -->
+          <h3 class="subsection-title">iscc_decompose</h3>
+          <form id="decompose-form">
+            <div class="form-row">
+              <div class="form-group">
+                <input id="decompose-input" class="form-input" value="ISCC:KACYPXW445FTYNJ3CYSXHAFJMA2HUWULUNRFE3BLHRSCXYH2M5AEGQY" placeholder="ISCC:..." />
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Decompose</button>
+              </div>
+            </div>
+          </form>
+          <div id="decompose-result"></div>
+        </div>
+
+        <!-- 13. Code Inspector -->
+        <div id="inspector" class="section">
+          <div class="section-header">
+            <span class="section-dot" style="background: var(--deep-navy)"></span>
+            <h2>Code Inspector</h2>
+          </div>
+          <p class="section-desc">
+            Parse and inspect any ISCC code using the <code>Code</code> class.
+            Shows the decoded header fields, type information, and raw hash bytes.
+          </p>
+          <form id="inspector-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="inspector-input">ISCC Code</label>
+                <input id="inspector-input" class="form-input" value="ISCC:KACYPXW445FTYNJ3CYSXHAFJMA2HUWULUNRFE3BLHRSCXYH2M5AEGQY" placeholder="ISCC:..." />
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Inspect</button>
+              </div>
+            </div>
+          </form>
+          <div id="inspector-result"></div>
+        </div>
+
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

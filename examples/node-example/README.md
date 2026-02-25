@@ -1,20 +1,28 @@
-# ISCC Core TypeScript - Node.js Example
+# ISCC Core TS — Node.js Example
 
-This example demonstrates how to use the iscc-core-ts library in a Node.js application.
+A command-line example demonstrating how to use the **iscc-core-ts** library in a Node.js application.
 
-## Setup Steps
+## Prerequisites
 
-1. Install dependencies:
-```bash
+- **Node.js** v22 LTS
+- The **iscc-core-ts** library must be built first (the example links to it via `file:../..`)
+
+## Quick Start
+
+From the repository root:
+
+```sh
+# 1. Install and build the library
 npm install
-```
+npm run build
 
-2. Run the example:
-```bash
+# 2. Install example dependencies and run
+cd examples/node-example
+npm install
 npm start
 ```
 
-## Testing Different Features
+## Features
 
 The example demonstrates all ISCC code generation functions:
 

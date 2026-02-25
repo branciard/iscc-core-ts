@@ -92,6 +92,7 @@ npm run make:docs/reference
 ```
 - Reference python implementation is available [here](https://github.com/iscc/iscc-core)
 - Reference standard documentation is available [here](https://www.iso.org/fr/standard/77899.html)
+- Examples (React, Svelte, Vite, Node.js) — see [`examples/README.md`](examples/README.md)
 
 # Funding
 

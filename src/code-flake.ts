@@ -104,8 +104,7 @@ export function uid_flake_v0(
     let counter = _COUNTER.get(timeKey) ?? 0n;
     if (counter === 0n) {
         // Init counter with random value
-        const randBytes = new Uint8Array(nbytes_rnd);
-        crypto.getRandomValues(randBytes);
+        const randBytes = crypto.randomFillSync(new Uint8Array(nbytes_rnd));
         const startcount = bytesToBigInt(randBytes);
         _COUNTER.set(timeKey, startcount);
         counter = startcount;

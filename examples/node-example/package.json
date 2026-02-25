@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "iscc-core-ts": "^0.3.0",
+    "iscc-core-ts": "file:../..",
     "typescript": "^5.0.0",
     "@types/node": "^20.0.0",
     "ts-node": "^10.9.0"
