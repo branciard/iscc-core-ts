@@ -1,3 +1,15 @@
+  > [!IMPORTANT]
+  > **This repository is archived and no longer maintained.**
+  >
+  > Development has moved to **[iscc/iscc-core-ts](https://github.com/iscc/iscc-core-ts)**.
+  >
+  > - Open issues and pull requests at the [new repository](https://github.com/iscc/iscc-core-ts/issues)
+  > - The npm package [`iscc-core-ts`](https://www.npmjs.com/package/iscc-core-ts) is unchanged — same package name, no action needed for existing users
+  > - Releases from v1.0.1 onward are published from `iscc/iscc-core-ts`
+  >
+  > This repository remains available read-only for historical reference.
+
+
 # iscc-core-ts
 
 [![Tests](https://github.com/iscc/iscc-core-ts/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/iscc/iscc-core-ts/actions/workflows/tests.yml)
